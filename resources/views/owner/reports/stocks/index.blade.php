@@ -104,9 +104,6 @@
                         </p>
                     </div>
 
-                    <input type="text" id="searchStock"
-                        placeholder="Cari produk / cabang..."
-                        class="w-full md:w-72 rounded-2xl border-slate-200 text-sm">
                 </div>
 
                 <div class="overflow-x-auto">
@@ -198,30 +195,6 @@
 
         document.getElementById('categoryFilter').addEventListener('change', function () {
             filterForm.submit();
-        });
-
-        const searchInput = document.getElementById('searchStock');
-        const stockRows = document.querySelectorAll('.stock-row');
-        const noSearchResult = document.getElementById('noSearchResult');
-
-        searchInput.addEventListener('keyup', function () {
-            const keyword = this.value.toLowerCase();
-            let visibleCount = 0;
-
-            stockRows.forEach(function (row) {
-                const text = row.innerText.toLowerCase();
-
-                if (text.includes(keyword)) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            if (stockRows.length > 0) {
-                noSearchResult.classList.toggle('hidden', visibleCount !== 0);
-            }
         });
     </script>
 </x-app-layout>

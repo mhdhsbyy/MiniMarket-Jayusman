@@ -2,18 +2,29 @@
     <div class="min-h-screen bg-[#f4f7f5]">
         <div class="max-w-7xl mx-auto px-6 py-8">
 
-            <div class="mb-8">
-                <p class="text-sm font-black text-emerald-700 uppercase tracking-widest">
-                    Monitoring Transaksi
-                </p>
+            <div class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
 
-                <h1 class="text-4xl font-black text-slate-900 mt-3">
-                    Riwayat Transaksi
-                </h1>
+                <div>
+                    <p class="text-sm font-black text-emerald-700 uppercase tracking-widest">
+                        Monitoring Transaksi
+                    </p>
 
-                <p class="text-slate-500 mt-2">
-                    Pantau pendapatan dan transaksi dari seluruh cabang.
-                </p>
+                    <h1 class="text-4xl font-black text-slate-900 mt-3">
+                        Riwayat Transaksi
+                    </h1>
+
+                    <p class="text-slate-500 mt-2">
+                        Pantau pendapatan dan transaksi dari seluruh cabang.
+                    </p>
+                </div>
+
+                <div>
+                    <a href="{{ route('owner.monitoring-transactions.pdf', request()->query()) }}" target="_blank"
+                        class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-700/20 hover:bg-emerald-800 font-black text-sm">
+                        Cetak Laporan PDF
+                    </a>
+                </div>
+
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
@@ -52,6 +63,27 @@
 
                 <div class="flex flex-col lg:flex-row lg:items-end gap-4">
                     <div class="flex-1">
+                        <label class="text-sm font-bold text-slate-600">Periode</label>
+                        <select name="periode" id="periodeFilter"
+                            class="mt-2 w-full rounded-2xl border-slate-200 text-sm">
+                            <option value="semua" {{ request('periode', 'semua') == 'semua' ? 'selected' : '' }}>
+                                Semua Periode
+                            </option>
+                            <option value="harian" {{ request('periode') == 'harian' ? 'selected' : '' }}>
+                                Per Hari
+                            </option>
+                            <option value="mingguan" {{ request('periode') == 'mingguan' ? 'selected' : '' }}>
+                                Per Minggu
+                            </option>
+                            <option value="bulanan" {{ request('periode') == 'bulanan' ? 'selected' : '' }}>
+                                Per Bulan
+                            </option>
+                            <option value="tahunan" {{ request('periode') == 'tahunan' ? 'selected' : '' }}>
+                                Per Tahun
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
                         <label class="text-sm font-bold text-slate-600">Cabang</label>
                         <select name="branch_id" id="branchFilter"
                             class="mt-2 w-full rounded-2xl border-slate-200 text-sm">
@@ -74,8 +106,7 @@
 
                     <div class="flex-1">
                         <label class="text-sm font-bold text-slate-600">Tanggal Akhir</label>
-                        <input type="date" name="end_date" id="endDateFilter"
-                            value="{{ request('end_date') }}"
+                        <input type="date" name="end_date" id="endDateFilter" value="{{ request('end_date') }}"
                             class="mt-2 w-full rounded-2xl border-slate-200 text-sm">
                     </div>
 
@@ -157,9 +188,8 @@
                     </div>
 
                     <div>
-                        <input type="text" id="searchTransaction"
-                            placeholder="Cari cabang / kasir / total..."
-                            class="w-full sm:w-72 rounded-2xl border-slate-200 text-sm">
+                        <input type="text" id="searchTransaction" placeholder="Cari cabang / kasir / total..."
+                            class="w-full sm:w-72 rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
                     </div>
                 </div>
 
@@ -255,7 +285,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: false
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -266,9 +298,13 @@
                 },
                 scales: {
                     x: {
-                        grid: { display: false },
+                        grid: {
+                            display: false
+                        },
                         ticks: {
-                            font: { weight: 'bold' }
+                            font: {
+                                weight: 'bold'
+                            }
                         }
                     },
                     y: {
@@ -288,15 +324,15 @@
         const startDateFilter = document.getElementById('startDateFilter');
         const endDateFilter = document.getElementById('endDateFilter');
 
-        branchFilter.addEventListener('change', function () {
+        branchFilter.addEventListener('change', function() {
             filterForm.submit();
         });
 
-        startDateFilter.addEventListener('change', function () {
+        startDateFilter.addEventListener('change', function() {
             filterForm.submit();
         });
 
-        endDateFilter.addEventListener('change', function () {
+        endDateFilter.addEventListener('change', function() {
             filterForm.submit();
         });
 
@@ -304,11 +340,11 @@
         const transactionRows = document.querySelectorAll('.transaction-row');
         const noRealtimeResultRow = document.getElementById('noRealtimeResultRow');
 
-        searchInput.addEventListener('keyup', function () {
+        searchInput.addEventListener('keyup', function() {
             const keyword = this.value.toLowerCase();
             let visibleCount = 0;
 
-            transactionRows.forEach(function (row) {
+            transactionRows.forEach(function(row) {
                 const text = row.innerText.toLowerCase();
 
                 if (text.includes(keyword)) {
@@ -322,6 +358,12 @@
             if (noRealtimeResultRow) {
                 noRealtimeResultRow.classList.toggle('hidden', visibleCount !== 0);
             }
+        });
+
+        const periodeFilter = document.getElementById('periodeFilter');
+
+        periodeFilter.addEventListener('change', function() {
+            filterForm.submit();
         });
     </script>
 </x-app-layout>

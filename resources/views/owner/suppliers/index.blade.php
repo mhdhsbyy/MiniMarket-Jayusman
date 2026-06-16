@@ -31,7 +31,7 @@
                     </div>
 
                     <input type="text" id="searchSupplier" placeholder="Cari supplier..."
-                        class="w-full md:w-72 rounded-2xl bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-700/20 hover:bg-emerald-800 transition">
+                        class="w-full md:w-72 rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
 
                 <div class="overflow-x-auto">

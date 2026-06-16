@@ -73,4 +73,54 @@ class StockMonitoringController extends Controller
             'stokMenipisList'
         ));
     }
+
+    public function pdf(Request $request)
+    {
+        $query = Stock::with(['branch', 'product.category']);
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('product', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
+        }
+
+        $stocks = $query
+            ->orderBy('jumlah_stok', 'asc')
+            ->get();
+
+        $branch = null;
+        $category = null;
+
+        if ($request->filled('branch_id')) {
+            $branch = Branch::find($request->branch_id);
+        }
+
+        if ($request->filled('category_id')) {
+            $category = Category::find($request->category_id);
+        }
+
+        $totalProduk = $stocks->count();
+        $totalStok = $stocks->sum('jumlah_stok');
+        $stokMenipis = $stocks->whereBetween('jumlah_stok', [1, 30])->count();
+        $stokHabis = $stocks->where('jumlah_stok', '<=', 0)->count();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'owner.monitoring-stocks.pdf',
+            compact(
+                'stocks',
+                'branch',
+                'category',
+                'totalProduk',
+                'totalStok',
+                'stokMenipis',
+                'stokHabis'
+            )
+        )->setPaper('a4', 'landscape');
+
+        return $pdf->stream('laporan-stok-owner.pdf');
+    }
 }

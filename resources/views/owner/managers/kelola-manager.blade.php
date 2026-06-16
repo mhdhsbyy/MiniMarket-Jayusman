@@ -11,6 +11,7 @@
                     <h1 class="text-4xl font-black text-slate-900 mt-2">
                         Data Manajer Mini Market
                     </h1>
+
                     <p class="text-slate-500 mt-2">
                         Kelola akun manajer toko yang bertanggung jawab pada setiap cabang minimarket jayusman.
                     </p>
@@ -35,7 +36,9 @@
                     <h2 class="text-4xl font-black text-slate-900 mt-3">
                         {{ $managers->count() }}
                     </h2>
-                    <p class="text-xs font-semibold text-emerald-600 mt-3">Akun manajer terdaftar</p>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">
+                        Akun manajer terdaftar
+                    </p>
                 </div>
 
                 <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
@@ -43,16 +46,16 @@
                     <h2 class="text-4xl font-black text-slate-900 mt-3">
                         {{ $managers->where('status', 'active')->count() }}
                     </h2>
-                    <p class="text-xs font-semibold text-emerald-600 mt-3">Siap mengelola cabang</p>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">
+                        Siap mengelola cabang
+                    </p>
                 </div>
 
                 <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Manager Nonaktif</p>
-
                     <h2 class="text-4xl font-black text-slate-900 mt-3">
                         {{ $managers->where('status', 'inactive')->count() }}
                     </h2>
-
                     <p class="text-xs font-semibold text-red-600 mt-3">
                         Perlu perhatian
                     </p>
@@ -102,7 +105,6 @@
                                         <p class="text-sm text-slate-500">
                                             {{ $manager->email }}
                                         </p>
-
                                     </td>
 
                                     <td class="px-6 py-5">
@@ -141,19 +143,22 @@
                                     <td class="px-6 py-5 text-right">
                                         <div class="flex justify-end gap-2">
                                             <a href="{{ route('owner.managers.edit', $manager->id) }}"
-                                                class="px-4 py-2 rounded-xl bg-amber-100 text-amber-700 text-sm font-bold  hover:bg-amber-200">
+                                                class="px-4 py-2 rounded-xl bg-amber-100 text-amber-700 text-sm font-bold hover:bg-amber-200">
                                                 Edit
                                             </a>
 
                                             <form action="{{ route('owner.managers.destroy', $manager->id) }}"
                                                 method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus manajer ini?')">
+                                                onsubmit="return confirm('Yakin ingin mengubah status manajer ini?')">
                                                 @csrf
                                                 @method('DELETE')
 
                                                 <button type="submit"
-                                                    class="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100">
-                                                    Hapus
+                                                    class="px-4 py-2 rounded-xl text-sm font-bold
+                                                    {{ $manager->status == 'active'
+                                                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                                        : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' }}">
+                                                    {{ $manager->status == 'active' ? 'Nonaktifkan' : 'Aktifkan' }}
                                                 </button>
                                             </form>
                                         </div>

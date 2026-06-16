@@ -102,10 +102,12 @@ class ManagerController extends Controller
 
     public function destroy(User $manager)
     {
-        $manager->delete();
+        $manager->update([
+            'status' => $manager->status == 'active' ? 'inactive' : 'active',
+        ]);
 
         return redirect()
             ->route('owner.managers.index')
-            ->with('success', 'Manager berhasil dihapus.');
+            ->with('success', 'Status manajer berhasil diperbarui.');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Manager\CashierController;
 use App\Http\Controllers\Owner\BranchController;
 use App\Http\Controllers\Owner\CategoryController;
 use App\Http\Controllers\Owner\DashboardController;
@@ -17,6 +18,13 @@ use App\Http\Controllers\Warehouse\StockController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
+use App\Http\Controllers\Manager\MonitoringStockController;
+use App\Http\Controllers\Manager\MonitoringTransactionController;
+use App\Http\Controllers\Manager\StockController as ManagerStockController;
+use App\Http\Controllers\Manager\SupervisorController;
+use App\Http\Controllers\Manager\TransactionController;
+use App\Http\Controllers\Manager\WarehouseController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -82,26 +90,30 @@ Route::middleware(['auth', 'role:owner'])
             ->name('monitoring-transactions.index');
         Route::get('/monitoring-transaksi/{transaction}', [TransactionMonitoringController::class, 'show'])
             ->name('monitoring-transactions.show');
+        Route::get('/monitoring-transactions/pdf', [TransactionMonitoringController::class, 'pdf'])
+            ->name('monitoring-transactions.pdf');
 
         // monitoring stok
         Route::get('/monitoring-stok', [StockMonitoringController::class, 'index'])
             ->name('monitoring-stocks.index');
+        Route::get('/monitoring-stocks/pdf', [StockMonitoringController::class, 'pdf'])
+            ->name('monitoring-stocks.pdf');
+    });
 
-        // laporan transaksi
-        Route::get('/laporan-transaksi', [TransactionReportController::class, 'index'])
-            ->name('reports.transactions.index');
+// role manager
+Route::middleware(['auth', 'role:manager'])
+    ->prefix('manager')
+    ->name('manager.')
+    ->group(function () {
 
-        // print pdf laporan transaksi
-        Route::get('/laporan-transaksi/pdf', [TransactionReportController::class, 'pdf'])
-            ->name('reports.transactions.pdf');
-
-        // laporan stok
-        Route::get('/laporan-stok', [StockReportController::class, 'index'])
-            ->name('reports.stocks.index');
-
-        // print pdf laporan transaksi
-        Route::get('/laporan-stok/pdf', [StockReportController::class, 'pdf'])
-            ->name('reports.stocks.pdf');
+        Route::get('/dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('supervisors', SupervisorController::class);
+        Route::resource('cashiers', CashierController::class);
+        Route::resource('warehouses', WarehouseController::class);
+        Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/pdf', [TransactionController::class, 'pdf'])->name('transactions.pdf');
+        Route::get('/stocks', [ManagerStockController::class, 'index'])->name('stocks.index');
+        Route::get('/stocks/pdf', [ManagerStockController::class, 'pdf'])->name('stocks.pdf');
     });
 
 // role warehouse
