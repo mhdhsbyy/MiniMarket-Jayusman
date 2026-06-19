@@ -226,16 +226,16 @@
                 {{ $transactions->count() }}
             </td>
             <td>
-                <span>Total Pendapatan</span>
-                Rp {{ number_format($transactions->where('status', 'success')->sum('total_bayar'), 0, ',', '.') }}
-            </td>
-            <td>
-                <span>Transaksi Success</span>
+                <span>Transaksi Selesai</span>
                 {{ $transactions->where('status', 'success')->count() }}
             </td>
             <td>
-                <span>Transaksi Cancelled</span>
+                <span>Transaksi Batal</span>
                 {{ $transactions->where('status', 'cancelled')->count() }}
+            </td>
+            <td>
+                <span>Total Pendapatan</span>
+                Rp {{ number_format($transactions->where('status', 'success')->sum('total_bayar'), 0, ',', '.') }}
             </td>
         </tr>
     </table>

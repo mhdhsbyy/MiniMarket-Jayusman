@@ -41,7 +41,7 @@ class DashboardController extends Controller
 
         $stokMenipis = Stock::with(['product.category'])
             ->where('branch_id', $branchId)
-            ->where('jumlah_stok', '<=', 10)
+            ->where('jumlah_stok', '<=', 30)
             ->orderBy('jumlah_stok', 'asc')
             ->limit(5)
             ->get();

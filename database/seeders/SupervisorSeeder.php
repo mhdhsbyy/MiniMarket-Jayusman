@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class SupervisorSeeder extends Seeder
 {
@@ -15,13 +16,15 @@ class SupervisorSeeder extends Seeder
 
         foreach ($branches as $branch) {
 
+            $namaCabang = Str::slug($branch->kota, '');
+
             $supervisor = User::create([
-                'username' => 'supervisor_' . strtolower($branch->kota),
+                'username' => 'supervisor_' . $namaCabang,
                 'first_name' => 'Supervisor',
-                'last_name' => $branch->kota,
-                'email' => 'supervisor.' . strtolower($branch->kota) . '@gmail.com',
+                'last_name' => $branch->nama,
+                'email' => 'supervisor.' . $namaCabang . '@gmail.com',
                 'password' => Hash::make('password'),
-                'no_hp' => '0812' . rand(10000000,99999999),
+                'no_hp' => '081200000' . rand(100, 999),
                 'status' => 'active',
                 'branch_id' => $branch->id,
             ]);

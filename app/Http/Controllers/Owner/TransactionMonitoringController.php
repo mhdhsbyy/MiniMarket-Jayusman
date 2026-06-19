@@ -145,6 +145,8 @@ class TransactionMonitoringController extends Controller
             $branch = Branch::find($request->branch_id);
         }
 
+        $totalCabang = $transactions->pluck('branch_id')->unique()->count();
+
         $periode = 'Semua Periode';
 
         if ($request->periode == 'harian') {
@@ -192,7 +194,8 @@ class TransactionMonitoringController extends Controller
                 'totalPendapatan',
                 'cabangTerbaik',
                 'branch',
-                'periode'
+                'periode',
+                'totalCabang'
             )
         )->setPaper('a4', 'landscape');
 

@@ -143,6 +143,10 @@
                     -
                 @endif
             </td>
+            <td>
+                <span>Total Cabang</span>
+                {{ $totalCabang }}
+            </td>
         </tr>
     </table>
 

@@ -29,9 +29,9 @@ class StockController extends Controller
             if ($request->status_stok === 'habis') {
                 $query->where('jumlah_stok', 0);
             } elseif ($request->status_stok === 'menipis') {
-                $query->whereBetween('jumlah_stok', [1, 10]);
-            } elseif ($request->status_stok === 'normal') {
-                $query->where('jumlah_stok', '>', 10);
+                $query->whereBetween('jumlah_stok', [1, 30]);
+            } elseif ($request->status_stok === 'aman') {
+                $query->where('jumlah_stok', '>', 30);
             }
         }
 
@@ -44,7 +44,7 @@ class StockController extends Controller
 
         $totalProduk = $filteredStocks->count();
         $totalStok = $filteredStocks->sum('jumlah_stok');
-        $stokMenipis = $filteredStocks->whereBetween('jumlah_stok', [1, 10])->count();
+        $stokMenipis = $filteredStocks->whereBetween('jumlah_stok', [1, 30])->count();
         $stokHabis = $filteredStocks->where('jumlah_stok', 0)->count();
 
         $chartStocks = (clone $query)
@@ -90,9 +90,9 @@ class StockController extends Controller
             if ($request->status_stok === 'habis') {
                 $query->where('jumlah_stok', 0);
             } elseif ($request->status_stok === 'menipis') {
-                $query->whereBetween('jumlah_stok', [1, 10]);
-            } elseif ($request->status_stok === 'normal') {
-                $query->where('jumlah_stok', '>', 10);
+                $query->whereBetween('jumlah_stok', [1, 30]);
+            } elseif ($request->status_stok === 'aman') {
+                $query->where('jumlah_stok', '>', 30);
             }
         }
 

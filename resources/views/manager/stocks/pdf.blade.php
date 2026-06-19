@@ -211,7 +211,7 @@
 
             <td>
                 <span>Stok Menipis</span>
-                {{ $stocks->whereBetween('jumlah_stok', [1, 10])->count() }}
+                {{ $stocks->whereBetween('jumlah_stok', [1, 30])->count() }}
             </td>
 
             <td>
@@ -257,10 +257,10 @@
                     <td>
                         @if ($stock->jumlah_stok == 0)
                             <span class="status-habis">Habis</span>
-                        @elseif ($stock->jumlah_stok <= 10)
+                        @elseif ($stock->jumlah_stok <= 30)
                             <span class="status-menipis">Menipis</span>
                         @else
-                            <span class="status-normal">Normal</span>
+                            <span class="status-normal">Aman</span>
                         @endif
                     </td>
                 </tr>

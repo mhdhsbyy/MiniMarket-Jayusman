@@ -32,25 +32,32 @@ class AuthenticatedSessionController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if ($user->hasRole('owner')) {
+        $user->load('roles');
+
+        if ($user->hasAnyRole(['owner'])) {
             return redirect()->route('owner.dashboard');
         }
 
-        if ($user->hasRole('manager')) {
+        if ($user->hasAnyRole(['manager'])) {
             return redirect()->route('manager.dashboard');
         }
 
-        if ($user->hasRole('supervisor')) {
+        if ($user->hasAnyRole(['supervisor'])) {
             return redirect()->route('supervisor.dashboard');
         }
 
-        if ($user->hasRole('cashier')) {
+        if ($user->hasAnyRole(['cashier'])) {
             return redirect()->route('cashier.dashboard');
         }
 
-        if ($user->hasRole('warehouse')) {
+        if ($user->hasAnyRole(['warehouse'])) {
             return redirect()->route('warehouse.dashboard');
         }
+
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         abort(403, 'Role user belum memiliki akses.');
     }
