@@ -21,7 +21,7 @@
                     </p>
 
                     <h1 class="text-4xl font-black text-slate-900 mt-3">
-                        Selamat Bertugas, {{ Auth::user()->first_name }} 👀
+                        Selamat Datang, {{ Auth::user()->first_name }} 👀
                     </h1>
 
                     <p class="text-slate-500 mt-3">

@@ -8,22 +8,70 @@ use App\Models\Product;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class IncomingGoodController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $incomingGoods = IncomingGood::with(['product', 'branch'])
-            ->where('branch_id', Auth::user()->cabang_id)
-            ->latest()
-            ->get();
+        $warehouse = Auth::user();
+        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
 
-        return view('warehouse.incoming-goods.index', compact('incomingGoods'));
+        $query = IncomingGood::with([
+            'product.category',
+            'product.supplier',
+            'user',
+        ])->where('branch_id', $branchId);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->whereHas('product', function ($productQuery) use ($search) {
+                $productQuery->where('nama', 'like', "%{$search}%")
+                    ->orWhere('kode', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where('nama', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('supplier', function ($supplierQuery) use ($search) {
+                        $supplierQuery->where('nama', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->filled('tanggal_awal')) {
+            $query->whereDate('tanggal_masuk', '>=', $request->tanggal_awal);
+        }
+
+        if ($request->filled('tanggal_akhir')) {
+            $query->whereDate('tanggal_masuk', '<=', $request->tanggal_akhir);
+        }
+
+        $incomingGoods = $query->latest('tanggal_masuk')
+            ->paginate(5)
+            ->withQueryString();
+
+        $totalBarangMasuk = IncomingGood::where('branch_id', $branchId)->count();
+
+        $totalJumlahMasuk = IncomingGood::where('branch_id', $branchId)->sum('jumlah');
+
+        $barangMasukHariIni = IncomingGood::where('branch_id', $branchId)
+            ->whereDate('tanggal_masuk', now())
+            ->sum('jumlah');
+
+        return view('warehouse.incoming-goods.index', compact(
+            'incomingGoods',
+            'totalBarangMasuk',
+            'totalJumlahMasuk',
+            'barangMasukHariIni'
+        ));
     }
 
     public function create()
     {
-        $products = Product::where('status', 'active')->get();
+        $products = Product::with(['supplier', 'category'])
+            ->where('status', 'active')
+            ->orderBy('nama')
+            ->get();
 
         return view('warehouse.incoming-goods.create', compact('products'));
     }
@@ -31,27 +79,65 @@ class IncomingGoodController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'product_id' => 'required',
-            'jumlah' => 'required|integer|min:1',
-            'tanggal_masuk' => 'required',
+            'product_id' => ['required', 'exists:products,id'],
+            'jumlah' => ['required', 'integer', 'min:1'],
+            'harga_beli' => ['required', 'numeric', 'min:0'],
+            'tanggal_masuk' => ['required', 'date'],
         ]);
 
-        $incoming = IncomingGood::create([
-            'branch_id' => Auth::user()->cabang_id,
-            'product_id' => $request->product_id,
-            'jumlah' => $request->jumlah,
-            'tanggal_masuk' => $request->tanggal_masuk,
-            'keterangan' => $request->keterangan,
-        ]);
+        $warehouse = Auth::user();
+        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
 
-        $stock = Stock::where('branch_id', Auth::user()->cabang_id)
-            ->where('product_id', $request->product_id)
-            ->first();
+        $product = Product::findOrFail($request->product_id);
 
-        $stock->increment('jumlah', $request->jumlah);
+        DB::transaction(function () use ($request, $warehouse, $branchId, $product) {
+            IncomingGood::create([
+                'user_id' => $warehouse->id,
+                'branch_id' => $branchId,
+                'product_id' => $product->id,
+                'jumlah' => $request->jumlah,
+                'harga_beli' => $request->harga_beli,
+                'tanggal_masuk' => $request->tanggal_masuk,
+            ]);
+
+            $stock = Stock::firstOrCreate(
+                [
+                    'branch_id' => $branchId,
+                    'product_id' => $product->id,
+                ],
+                [
+                    'jumlah_stok' => 0,
+                ]
+            );
+
+            $stock->increment('jumlah_stok', $request->jumlah);
+
+            if ((float) $product->harga_beli !== (float) $request->harga_beli) {
+                $product->update([
+                    'harga_beli' => $request->harga_beli,
+                ]);
+            }
+        });
 
         return redirect()
             ->route('warehouse.incoming-goods.index')
-            ->with('success', 'Barang masuk berhasil ditambahkan.');
+            ->with('success', 'Barang masuk berhasil disimpan, stok diperbarui, dan harga beli produk disesuaikan.');
+    }
+
+    public function show(IncomingGood $incomingGood)
+    {
+        $warehouse = Auth::user();
+        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+
+        abort_if($incomingGood->branch_id != $branchId, 403);
+
+        $incomingGood->load([
+            'product.category',
+            'product.supplier',
+            'user',
+            'branch',
+        ]);
+
+        return view('warehouse.incoming-goods.show', compact('incomingGood'));
     }
 }

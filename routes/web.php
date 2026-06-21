@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Cashier\DashboardController as CashierDashboardController;
+use App\Http\Controllers\Cashier\TransactionController as CashierTransactionController;
 use App\Http\Controllers\Manager\CashierController;
 use App\Http\Controllers\Owner\BranchController;
 use App\Http\Controllers\Owner\CategoryController;
@@ -28,6 +30,9 @@ use App\Http\Controllers\Manager\WarehouseController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\StockController as SupervisorStockController;
 use App\Http\Controllers\Supervisor\TransactionController as SupervisorTransactionController;
+use App\Http\Controllers\Warehouse\DashboardController as WarehouseDashboardController;
+use App\Http\Controllers\Warehouse\StockController as WarehouseStockController;
+use App\Http\Controllers\Warehouse\IncomingGoodController as WarehouseIncomingGoodController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -131,10 +136,19 @@ Route::middleware(['auth', 'role:cashier'])
     ->name('cashier.')
     ->group(function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])
+        Route::get('/dashboard', [CashierDashboardController::class, 'index'])
             ->name('dashboard');
 
-        Route::resource('transactions', TransactionController::class)
+        Route::get('/transactions/history', [CashierTransactionController::class, 'history'])
+            ->name('transactions.history');
+
+        Route::get('/transactions/{transaction}', [CashierTransactionController::class, 'show'])
+            ->name('transactions.show');
+
+        Route::get('/transactions/{transaction}/receipt', [CashierTransactionController::class, 'receipt'])
+            ->name('transactions.receipt');
+
+        Route::resource('transactions', CashierTransactionController::class)
             ->only([
                 'index',
                 'store',
@@ -149,13 +163,14 @@ Route::middleware(['auth', 'role:warehouse'])
     ->group(function () {
 
         // dashboard
-        Route::view('/dashboard', 'warehouse.dashboard')->name('dashboard');
+        Route::get('/dashboard', [WarehouseDashboardController::class, 'index'])->name('dashboard');
 
         // stok barang
-        Route::get('/stocks', [StockController::class, 'index'])->name('stocks.index');
+        Route::get('/stocks', [WarehouseStockController::class, 'index'])
+            ->name('stocks.index');
 
         // barang masuk
-        Route::resource('incoming-goods', IncomingGoodController::class)->except(['show', 'edit', 'update']);
+        Route::resource('incoming-goods', WarehouseIncomingGoodController::class)->only(['index', 'create', 'store', 'show']);
     });
 
 require __DIR__ . '/auth.php';

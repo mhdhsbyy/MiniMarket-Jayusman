@@ -37,11 +37,6 @@ class Product extends Model
         return $this->hasMany(IncomingGood::class, 'product_id', 'id');
     }
 
-    public function outgoingGoods()
-    {
-        return $this->hasMany(OutgoingGood::class, 'product_id', 'id');
-    }
-
     public function transactionDetails()
     {
         return $this->hasMany(TransactionDetail::class, 'product_id', 'id');
