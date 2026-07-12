@@ -54,12 +54,9 @@
 
                         <div>
                             <label class="block mb-2 text-sm font-black text-slate-700">Kode Produk</label>
-                            <input type="text" name="kode" value="{{ old('kode', $product->kode) }}"
-                                placeholder="Contoh: BRG001"
-                                class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
-                            @error('kode')
-                                <p class="text-red-500 text-sm font-semibold mt-2">{{ $message }}</p>
-                            @enderror
+                            <input type="text" value="{{ $product->kode }}"
+                                class="w-full rounded-2xl border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500 cursor-not-allowed"
+                                readonly>
                         </div>
 
                         <div>
@@ -74,9 +71,13 @@
 
                         <div>
                             <label class="block mb-2 text-sm font-black text-slate-700">Harga Beli</label>
-                            <input type="number" name="harga_beli" value="{{ old('harga_beli', $product->harga_beli) }}"
-                                placeholder="Contoh: 2800"
-                                class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500 font-semibold">Rp</span>
+                                <input type="text" name="harga_beli" value="{{ old('harga_beli', number_format($product->harga_beli, 0, ',', '.')) }}"
+                                    placeholder="Contoh: 3.000"
+                                    oninput="this.value = this.value.replace(/[^\d]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')"
+                                    class="w-full rounded-2xl border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            </div>
                             @error('harga_beli')
                                 <p class="text-red-500 text-sm font-semibold mt-2">{{ $message }}</p>
                             @enderror
@@ -84,9 +85,13 @@
 
                         <div>
                             <label class="block mb-2 text-sm font-black text-slate-700">Harga Jual</label>
-                            <input type="number" name="harga_jual" value="{{ old('harga_jual', $product->harga_jual) }}"
-                                placeholder="Contoh: 3500"
-                                class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500 font-semibold">Rp</span>
+                                <input type="text" name="harga_jual" value="{{ old('harga_jual', number_format($product->harga_jual, 0, ',', '.')) }}"
+                                    placeholder="Contoh: 3.500"
+                                    oninput="this.value = this.value.replace(/[^\d]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')"
+                                    class="w-full rounded-2xl border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            </div>
                             @error('harga_jual')
                                 <p class="text-red-500 text-sm font-semibold mt-2">{{ $message }}</p>
                             @enderror
@@ -97,7 +102,7 @@
                             <select name="satuan"
                                 class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
                                 <option value="">Pilih Satuan</option>
-                                @foreach (['pcs', 'botol', 'pack', 'dus', 'kg', 'liter'] as $satuan)
+                                @foreach (['pcs', 'botol', 'pack', 'dus', 'kg', 'liter', 'sachet', 'renceng', 'gram', 'ml'] as $satuan)
                                     <option value="{{ $satuan }}"
                                         {{ old('satuan', $product->satuan) == $satuan ? 'selected' : '' }}>
                                         {{ $satuan }}

@@ -17,21 +17,40 @@ class TransactionController extends Controller
         $manager = Auth::user();
         $branchId = $manager->branch_id;
 
-        $periode = $request->periode ?? 'harian';
-
         $filteredQuery = Transaction::with(['branch', 'cashier', 'details.product'])
             ->where('branch_id', $branchId);
 
-        if ($request->filled('tanggal_awal')) {
-            $filteredQuery->whereDate('tanggal_transaksi', '>=', $request->tanggal_awal);
+        if ($request->filled('periode') && $request->periode !== 'semua') {
+            if ($request->periode === 'harian') {
+                $filteredQuery->whereDate('tanggal_transaksi', now()->toDateString());
+            } elseif ($request->periode === 'mingguan') {
+                $filteredQuery->whereBetween('tanggal_transaksi', [
+                    now()->startOfWeek()->startOfDay(),
+                    now()->endOfWeek()->endOfDay(),
+                ]);
+            } elseif ($request->periode === 'bulanan') {
+                $filteredQuery->whereMonth('tanggal_transaksi', now()->month)
+                    ->whereYear('tanggal_transaksi', now()->year);
+            } elseif ($request->periode === 'tahunan') {
+                $filteredQuery->whereYear('tanggal_transaksi', now()->year);
+            }
         }
 
-        if ($request->filled('tanggal_akhir')) {
-            $filteredQuery->whereDate('tanggal_transaksi', '<=', $request->tanggal_akhir);
+        if ($request->filled('start_date')) {
+            $filteredQuery->whereDate('tanggal_transaksi', '>=', $request->start_date);
         }
 
-        if ($request->filled('status')) {
-            $filteredQuery->where('status', $request->status);
+        if ($request->filled('end_date')) {
+            $filteredQuery->whereDate('tanggal_transaksi', '<=', $request->end_date);
+        }
+
+        if ($request->filled('search')) {
+            $filteredQuery->where(function ($q) use ($request) {
+                $q->whereHas('cashier', function ($cashier) use ($request) {
+                    $cashier->where('first_name', 'like', '%'.$request->search.'%')
+                        ->orWhere('last_name', 'like', '%'.$request->search.'%');
+                });
+            });
         }
 
         $transactions = (clone $filteredQuery)
@@ -53,73 +72,21 @@ class TransactionController extends Controller
             ->where('status', 'cancelled')
             ->count();
 
-        $chartQuery = (clone $filteredQuery)
-            ->where('status', 'success');
+        $chartTransactions = (clone $filteredQuery)
+            ->where('status', 'success')
+            ->select(
+                DB::raw('DATE(tanggal_transaksi) as tanggal'),
+                DB::raw('SUM(total_bayar) as total')
+            )
+            ->groupBy(DB::raw('DATE(tanggal_transaksi)'))
+            ->orderBy('tanggal')
+            ->get();
 
-        if ($periode === 'mingguan') {
-            $chartTransactions = $chartQuery
-                ->select(
-                    DB::raw('YEAR(tanggal_transaksi) as tahun'),
-                    DB::raw('WEEK(tanggal_transaksi, 1) as minggu'),
-                    DB::raw('SUM(total_bayar) as total')
-                )
-                ->groupBy(
-                    DB::raw('YEAR(tanggal_transaksi)'),
-                    DB::raw('WEEK(tanggal_transaksi, 1)')
-                )
-                ->orderBy(DB::raw('YEAR(tanggal_transaksi)'))
-                ->orderBy(DB::raw('WEEK(tanggal_transaksi, 1)'))
-                ->get();
+        $chartLabels = $chartTransactions->map(function ($item) {
+            return Carbon::parse($item->tanggal)->format('d M');
+        });
 
-            $chartLabels = $chartTransactions->map(function ($item) {
-                return 'Minggu ' . $item->minggu . ' ' . $item->tahun;
-            });
-
-            $chartData = $chartTransactions->pluck('total');
-        } elseif ($periode === 'bulanan') {
-            $chartTransactions = $chartQuery
-                ->select(
-                    DB::raw('DATE_FORMAT(tanggal_transaksi, "%Y-%m") as bulan'),
-                    DB::raw('SUM(total_bayar) as total')
-                )
-                ->groupBy(DB::raw('DATE_FORMAT(tanggal_transaksi, "%Y-%m")'))
-                ->orderBy('bulan')
-                ->get();
-
-            $chartLabels = $chartTransactions->map(function ($item) {
-                return Carbon::createFromFormat('Y-m', $item->bulan)->translatedFormat('M Y');
-            });
-
-            $chartData = $chartTransactions->pluck('total');
-        } elseif ($periode === 'tahunan') {
-            $chartTransactions = $chartQuery
-                ->select(
-                    DB::raw('YEAR(tanggal_transaksi) as tahun'),
-                    DB::raw('SUM(total_bayar) as total')
-                )
-                ->groupBy(DB::raw('YEAR(tanggal_transaksi)'))
-                ->orderBy(DB::raw('YEAR(tanggal_transaksi)'))
-                ->get();
-
-            $chartLabels = $chartTransactions->pluck('tahun');
-
-            $chartData = $chartTransactions->pluck('total');
-        } else {
-            $chartTransactions = $chartQuery
-                ->select(
-                    DB::raw('DATE(tanggal_transaksi) as tanggal'),
-                    DB::raw('SUM(total_bayar) as total')
-                )
-                ->groupBy(DB::raw('DATE(tanggal_transaksi)'))
-                ->orderBy('tanggal')
-                ->get();
-
-            $chartLabels = $chartTransactions->map(function ($item) {
-                return Carbon::parse($item->tanggal)->format('d M');
-            });
-
-            $chartData = $chartTransactions->pluck('total');
-        }
+        $chartData = $chartTransactions->pluck('total');
 
         return view('manager.transactions.index', compact(
             'transactions',
@@ -128,9 +95,21 @@ class TransactionController extends Controller
             'transaksiSelesai',
             'transaksiBatal',
             'chartLabels',
-            'chartData',
-            'periode'
+            'chartData'
         ));
+    }
+
+    public function show(Transaction $transaction)
+    {
+        $manager = Auth::user();
+
+        if ($transaction->branch_id !== $manager->branch_id) {
+            abort(403);
+        }
+
+        $transaction->load(['cashier', 'details.product']);
+
+        return view('manager.transactions.show', compact('transaction'));
     }
 
     public function pdf(Request $request)
@@ -141,16 +120,37 @@ class TransactionController extends Controller
         $query = Transaction::with(['branch', 'cashier', 'details.product'])
             ->where('branch_id', $branchId);
 
-        if ($request->filled('tanggal_awal')) {
-            $query->whereDate('tanggal_transaksi', '>=', $request->tanggal_awal);
+        if ($request->filled('periode') && $request->periode !== 'semua') {
+            if ($request->periode === 'harian') {
+                $query->whereDate('tanggal_transaksi', now()->toDateString());
+            } elseif ($request->periode === 'mingguan') {
+                $query->whereBetween('tanggal_transaksi', [
+                    now()->startOfWeek()->startOfDay(),
+                    now()->endOfWeek()->endOfDay(),
+                ]);
+            } elseif ($request->periode === 'bulanan') {
+                $query->whereMonth('tanggal_transaksi', now()->month)
+                    ->whereYear('tanggal_transaksi', now()->year);
+            } elseif ($request->periode === 'tahunan') {
+                $query->whereYear('tanggal_transaksi', now()->year);
+            }
         }
 
-        if ($request->filled('tanggal_akhir')) {
-            $query->whereDate('tanggal_transaksi', '<=', $request->tanggal_akhir);
+        if ($request->filled('start_date')) {
+            $query->whereDate('tanggal_transaksi', '>=', $request->start_date);
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if ($request->filled('end_date')) {
+            $query->whereDate('tanggal_transaksi', '<=', $request->end_date);
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('cashier', function ($cashier) use ($request) {
+                    $cashier->where('first_name', 'like', '%'.$request->search.'%')
+                        ->orWhere('last_name', 'like', '%'.$request->search.'%');
+                });
+            });
         }
 
         $transactions = $query

@@ -119,7 +119,7 @@
     <div class="info">
         <strong>Periode:</strong> {{ $periode }} <br>
         <strong>Cabang:</strong> {{ $branch ? $branch->nama : 'Semua Cabang' }} <br>
-        <strong>Tanggal Cetak:</strong> {{ now()->format('d M Y H:i') }}
+        <strong>Tanggal Cetak:</strong> {{ now()->translatedFormat('d F Y H:i') }}
     </div>
 
     <table class="summary">
@@ -169,7 +169,7 @@
                     <td>{{ $loop->iteration }}</td>
 
                     <td>
-                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}
+                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
                     </td>
 
                     <td>

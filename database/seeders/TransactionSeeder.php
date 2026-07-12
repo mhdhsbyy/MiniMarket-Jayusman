@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Transaction;
@@ -13,14 +14,20 @@ class TransactionSeeder extends Seeder
 {
     public function run(): void
     {
-        $cashiers = User::role('cashier')->get();
+        $branches = Branch::all();
 
-        foreach ($cashiers as $cashier) {
+        foreach ($branches as $branch) {
+
+            $cashiers = User::role('cashier')
+                ->where('branch_id', $branch->id)
+                ->get();
 
             for ($i = 1; $i <= 15; $i++) {
 
+                $cashier = $cashiers->random();
+
                 $transaction = Transaction::create([
-                    'branch_id' => $cashier->branch_id,
+                    'branch_id' => $branch->id,
                     'cashier_id' => $cashier->id,
                     'tanggal_transaksi' => now()
                         ->subDays(rand(0, 30))
@@ -38,11 +45,11 @@ class TransactionSeeder extends Seeder
                 $totalBayar = 0;
 
                 foreach ($products as $product) {
-                    $stock = Stock::where('branch_id', $cashier->branch_id)
+                    $stock = Stock::where('branch_id', $branch->id)
                         ->where('product_id', $product->id)
                         ->first();
 
-                    if (!$stock || $stock->jumlah_stok <= 10) {
+                    if (! $stock || $stock->jumlah_stok <= 10) {
                         continue;
                     }
 
@@ -68,6 +75,7 @@ class TransactionSeeder extends Seeder
 
                 if ($totalBayar == 0) {
                     $transaction->delete();
+
                     continue;
                 }
 

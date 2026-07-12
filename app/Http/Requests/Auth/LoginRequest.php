@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -34,6 +36,17 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'username.required' => 'Username dan Password harus di isi',
+            'password.required' => 'Username dan Password harus di isi',
+        ];
+    }
+
+    /**
      * Attempt to authenticate the request's credentials.
      *
      * @throws ValidationException
@@ -42,13 +55,41 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        $user = User::where('username', $this->string('username'))->first();
+
+        if (! $user) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => trans('auth.failed'),
+                'password' => 'Username dan Password salah',
             ]);
         }
+
+        if ($user->status === 'inactive') {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'Akun Anda telah dinonaktifkan.',
+            ]);
+        }
+
+        if ($user->branch_id && $user->branch && $user->branch->status === 'inactive') {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'Cabang Anda telah dinonaktifkan, silakan hubungi owner.',
+            ]);
+        }
+
+        if (! Hash::check($this->string('password'), $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'Password salah',
+            ]);
+        }
+
+        Auth::login($user, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }

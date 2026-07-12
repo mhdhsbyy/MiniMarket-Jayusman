@@ -120,7 +120,7 @@
                             </p>
 
                             <p class="mt-2 text-lg font-black text-slate-900">
-                                {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}
+                                {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
                             </p>
                         </div>
 

@@ -11,7 +11,7 @@ class Branch extends Model
         'nama',
         'kota',
         'alamat',
-        'status'
+        'status',
     ];
 
     public function user()
@@ -44,5 +44,4 @@ class Branch extends Model
     {
         return $this->hasMany(Transaction::class, 'branch_id', 'id');
     }
-
 }

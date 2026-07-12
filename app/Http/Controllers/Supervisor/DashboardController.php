@@ -23,7 +23,7 @@ class DashboardController extends Controller
             ->sum('total_bayar');
 
         $produkMenipis = Stock::where('branch_id', $branchId)
-            ->where('jumlah_stok', '<=', 30)
+            ->where('jumlah_stok', '<', 30)
             ->count();
 
         $totalProduk = Stock::where('branch_id', $branchId)
@@ -37,7 +37,7 @@ class DashboardController extends Controller
 
         $stokMenipis = Stock::with('product.category')
             ->where('branch_id', $branchId)
-            ->where('jumlah_stok', '<=', 30)
+            ->where('jumlah_stok', '<', 30)
             ->orderBy('jumlah_stok')
             ->limit(5)
             ->get();

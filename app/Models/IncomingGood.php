@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class IncomingGood extends Model
 {
+    protected $casts = [
+        'tanggal_masuk' => 'datetime',
+        'harga_beli' => 'decimal:2',
+    ];
+
     protected $fillable = [
         'branch_id',
         'user_id',
@@ -29,11 +34,6 @@ class IncomingGood extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
-    }
-
-     public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
     }
 
 }

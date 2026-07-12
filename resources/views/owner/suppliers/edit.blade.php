@@ -19,6 +19,15 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
+                            <label class="block mb-2 text-sm font-black text-slate-700">Kode Supplier</label>
+                            <input type="text" name="kode" value="{{ old('kode', $supplier->kode) }}"
+                                class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            @error('kode')
+                                <p class="text-red-500 text-sm font-semibold mt-2">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
                             <label class="block mb-2 text-sm font-black text-slate-700">Nama Supplier</label>
                             <input type="text" name="nama" value="{{ old('nama', $supplier->nama) }}"
                                 class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500">

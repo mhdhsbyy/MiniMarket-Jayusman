@@ -49,7 +49,7 @@
                     <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
                         <p class="text-xs font-black text-slate-500 uppercase">Supplier</p>
                         <h3 class="text-lg font-black text-slate-900 mt-2">
-                            {{ $incomingGood->supplier->nama ?? $incomingGood->product->supplier->nama ?? '-' }}
+                            {{ $incomingGood->product->supplier->nama ?? '-' }}
                         </h3>
                     </div>
 
@@ -77,7 +77,7 @@
                     <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
                         <p class="text-xs font-black text-slate-500 uppercase">Tanggal Masuk</p>
                         <h3 class="text-lg font-black text-slate-900 mt-2">
-                            {{ \Carbon\Carbon::parse($incomingGood->tanggal_masuk)->translatedFormat('d F Y') }}
+                            {{ \Carbon\Carbon::parse($incomingGood->tanggal_masuk)->translatedFormat('d F Y H:i') }}
                         </h3>
                     </div>
 

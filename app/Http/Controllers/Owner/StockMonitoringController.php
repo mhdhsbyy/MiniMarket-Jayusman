@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Exports\StocksExport;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Stock;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StockMonitoringController extends Controller
 {
@@ -28,7 +31,7 @@ class StockMonitoringController extends Controller
 
         $totalProdukStok = (clone $baseQuery)->count();
         $totalStokBarang = (clone $baseQuery)->sum('jumlah_stok');
-        $produkMenipis = (clone $baseQuery)->where('jumlah_stok', '<=', 30)->count();
+        $produkMenipis = (clone $baseQuery)->where('jumlah_stok', '<', 30)->count();
         $produkHabis = (clone $baseQuery)->where('jumlah_stok', '<=', 0)->count();
 
         $chartStokCabang = Stock::join('branches', 'stocks.branch_id', '=', 'branches.id')
@@ -108,7 +111,7 @@ class StockMonitoringController extends Controller
         $stokMenipis = $stocks->whereBetween('jumlah_stok', [1, 30])->count();
         $stokHabis = $stocks->where('jumlah_stok', '<=', 0)->count();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        $pdf = Pdf::loadView(
             'owner.monitoring-stocks.pdf',
             compact(
                 'stocks',
@@ -121,6 +124,41 @@ class StockMonitoringController extends Controller
             )
         )->setPaper('a4', 'landscape');
 
-        return $pdf->stream('laporan-stok-owner.pdf');
+        return $pdf->stream('Laporan Stok Mini Market Jayusmart.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $query = Stock::with(['branch', 'product.category']);
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('product', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
+        }
+
+        $stocks = $query
+            ->orderBy('jumlah_stok', 'asc')
+            ->get();
+
+        $branch = null;
+        $category = null;
+
+        if ($request->filled('branch_id')) {
+            $branch = Branch::find($request->branch_id);
+        }
+
+        if ($request->filled('category_id')) {
+            $category = Category::find($request->category_id);
+        }
+
+        return Excel::download(
+            new StocksExport($stocks, $branch, $category),
+            'Laporan Stok Mini Market Jayusmart.xlsx'
+        );
     }
 }

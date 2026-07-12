@@ -119,7 +119,7 @@
     <div class="info">
         <p><strong>Periode:</strong> {{ $periode }}</p>
         <p><strong>Cabang:</strong> {{ $branch ? $branch->nama : 'Semua Cabang' }}</p>
-        <p><strong>Tanggal Cetak:</strong> {{ now()->format('d M Y H:i') }}</p>
+        <p><strong>Tanggal Cetak:</strong> {{ now()->translatedFormat('d F Y H:i') }}</p>
     </div>
 
     <div class="summary">
@@ -151,7 +151,7 @@
             @forelse ($transactions as $transaction)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}</td>
                     <td>{{ $transaction->branch->nama ?? '-' }}</td>
                     <td>
                         {{ $transaction->cashier->first_name ?? '-' }}

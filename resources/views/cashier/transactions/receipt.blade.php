@@ -116,7 +116,7 @@
         <div class="row">
             <div class="left">Tanggal</div>
             <div class="right">
-                {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d/m/Y H:i') }}
+                {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
             </div>
         </div>
 

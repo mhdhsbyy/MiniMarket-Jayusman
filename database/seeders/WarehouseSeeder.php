@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,94 +17,53 @@ class WarehouseSeeder extends Seeder
 
             // Cabang 1
             [
-                'username' => 'warehouse_cianjur_1',
-                'first_name' => 'Rizky',
-                'last_name' => 'Pratama',
-                'email' => 'warehouse.cianjur1@gmail.com',
-                'no_hp' => '081111111111',
-                'branch_id' => 1,
-            ],
-            [
-                'username' => 'warehouse_cianjur_2',
-                'first_name' => 'Dimas',
-                'last_name' => 'Saputra',
-                'email' => 'warehouse.cianjur2@gmail.com',
-                'no_hp' => '081111111112',
+                'username' => 'warehouse_cianjur',
+                'first_name' => 'Warehouse',
+                'last_name' => 'Cianjur',
+                'email' => 'warehouse.cianjur@gmail.com',
+                'no_hp' => '081111111011',
                 'branch_id' => 1,
             ],
 
             // Cabang 2
             [
-                'username' => 'warehouse_bandung_1',
-                'first_name' => 'Fajar',
-                'last_name' => 'Ramadhan',
-                'email' => 'warehouse.bandung1@gmail.com',
-                'no_hp' => '082222222221',
-                'branch_id' => 2,
-            ],
-            [
-                'username' => 'warehouse_bandung_2',
-                'first_name' => 'Andi',
-                'last_name' => 'Wijaya',
-                'email' => 'warehouse.bandung2@gmail.com',
-                'no_hp' => '082222222222',
+                'username' => 'warehouse_bandung',
+                'first_name' => 'Warehouse',
+                'last_name' => 'Bandung',
+                'email' => 'warehouse.bandung@gmail.com',
+                'no_hp' => '082222222321',
                 'branch_id' => 2,
             ],
 
             // Cabang 3
             [
-                'username' => 'warehouse_bogor_1',
-                'first_name' => 'Reza',
-                'last_name' => 'Kurniawan',
+                'username' => 'warehouse_bogor',
+                'first_name' => 'Warehouse',
+                'last_name' => 'Bogor',
                 'email' => 'warehouse.bogor1@gmail.com',
-                'no_hp' => '083333333331',
-                'branch_id' => 3,
-            ],
-            [
-                'username' => 'warehouse_bogor_2',
-                'first_name' => 'Arif',
-                'last_name' => 'Setiawan',
-                'email' => 'warehouse.bogor2@gmail.com',
-                'no_hp' => '083333333332',
+                'no_hp' => '083333333531',
                 'branch_id' => 3,
             ],
 
             // Cabang 4
             [
-                'username' => 'warehouse_sukabumi_1',
-                'first_name' => 'Bima',
-                'last_name' => 'Nugraha',
-                'email' => 'warehouse.sukabumi1@gmail.com',
-                'no_hp' => '084444444441',
-                'branch_id' => 4,
-            ],
-            [
-                'username' => 'warehouse_sukabumi_2',
-                'first_name' => 'Yoga',
-                'last_name' => 'Firmansyah',
-                'email' => 'warehouse.sukabumi2@gmail.com',
-                'no_hp' => '084444444442',
+                'username' => 'warehouse_sukabumi',
+                'first_name' => 'Warehouse',
+                'last_name' => 'Sukabumi',
+                'email' => 'warehouse.sukabumi@gmail.com',
+                'no_hp' => '084444444741',
                 'branch_id' => 4,
             ],
 
             // Cabang 5
             [
-                'username' => 'warehouse_garut_1',
-                'first_name' => 'Ilham',
-                'last_name' => 'Maulana',
-                'email' => 'warehouse.garut1@gmail.com',
-                'no_hp' => '085555555551',
+                'username' => 'warehouse_jakarta',
+                'first_name' => 'Warehouse',
+                'last_name' => 'Jakarta',
+                'email' => 'warehouse.garut@gmail.com',
+                'no_hp' => '085555555951',
                 'branch_id' => 5,
             ],
-            [
-                'username' => 'warehouse_garut_2',
-                'first_name' => 'Akbar',
-                'last_name' => 'Hidayat',
-                'email' => 'warehouse.garut2@gmail.com',
-                'no_hp' => '085555555552',
-                'branch_id' => 5,
-            ],
-
         ];
 
         foreach ($warehouses as $data) {

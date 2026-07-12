@@ -16,7 +16,11 @@ class StockSeeder extends Seeder
 
         foreach ($branches as $branch) {
 
-            foreach ($products as $product) {
+            $selectedProducts = $products->count() > 10
+                ? $products->random(10)
+                : $products;
+
+            foreach ($selectedProducts as $product) {
 
                 Stock::create([
                     'branch_id' => $branch->id,

@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Product;
-use App\Models\Supplier;
 use App\Models\Stock;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller

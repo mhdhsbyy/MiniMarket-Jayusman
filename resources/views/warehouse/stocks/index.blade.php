@@ -138,6 +138,10 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">
+                                    No
+                                </th>
+
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">
                                     Produk
                                 </th>
@@ -163,6 +167,9 @@
                         <tbody class="divide-y divide-slate-100">
                             @forelse ($stocks as $stock)
                                 <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ ($stocks->currentPage() - 1) * $stocks->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5">
                                         <p class="font-black text-slate-900">
                                             {{ $stock->product->nama ?? '-' }}
@@ -205,7 +212,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
                                         Data stok tidak ditemukan.
                                     </td>
                                 </tr>

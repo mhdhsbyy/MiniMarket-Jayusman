@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,43 +17,43 @@ class ManagerSeeder extends Seeder
         $managers = [
             [
                 'username' => 'manager_cianjur',
-                'first_name' => 'Ahmad',
-                'last_name' => 'Ramadhan',
+                'first_name' => 'Manager',
+                'last_name' => 'Cianjur',
                 'email' => 'manager.cianjur@gmail.com',
                 'no_hp' => '081111111111',
-                'cabang_id' => 1,
+                'branch_id' => 1,
             ],
             [
                 'username' => 'manager_bandung',
-                'first_name' => 'Budi',
-                'last_name' => 'Santoso',
+                'first_name' => 'Manager',
+                'last_name' => 'Bandung',
                 'email' => 'manager.bandung@gmail.com',
                 'no_hp' => '082222222222',
-                'cabang_id' => 2,
+                'branch_id' => 2,
             ],
             [
                 'username' => 'manager_bogor',
-                'first_name' => 'Candra',
-                'last_name' => 'Wijaya',
+                'first_name' => 'Manager',
+                'last_name' => 'Bogor',
                 'email' => 'manager.bogor@gmail.com',
                 'no_hp' => '083333333333',
-                'cabang_id' => 3,
+                'branch_id' => 3,
             ],
             [
                 'username' => 'manager_sukabumi',
-                'first_name' => 'Deni',
-                'last_name' => 'Pratama',
+                'first_name' => 'Manager',
+                'last_name' => 'Sukabumi',
                 'email' => 'manager.sukabumi@gmail.com',
                 'no_hp' => '084444444444',
-                'cabang_id' => 4,
+                'branch_id' => 4,
             ],
             [
-                'username' => 'manager_garut',
-                'first_name' => 'Eko',
-                'last_name' => 'Saputra',
-                'email' => 'manager.garut@gmail.com',
+                'username' => 'manager_jakarta',
+                'first_name' => 'Manager',
+                'last_name' => 'Jakarta',
+                'email' => 'manager.jakarta@gmail.com',
                 'no_hp' => '085555555555',
-                'cabang_id' => 5,
+                'branch_id' => 5,
             ],
         ];
 
@@ -68,7 +67,7 @@ class ManagerSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'no_hp' => $data['no_hp'],
                 'status' => 'active',
-                'branch_id' => $data['cabang_id'],
+                'branch_id' => $data['branch_id'],
             ]);
 
             $manager->assignRole('manager');

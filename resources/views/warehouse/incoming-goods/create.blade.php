@@ -53,7 +53,7 @@
                     <input type="hidden" name="product_id" id="product_id" value="{{ old('product_id') }}">
                     <input type="hidden" name="harga_beli" id="harga_beli" value="{{ old('harga_beli') }}">
                     <input type="hidden" name="tanggal_masuk" id="tanggal_masuk"
-                        value="{{ old('tanggal_masuk', now()->toDateString()) }}">
+                        value="{{ old('tanggal_masuk', now()) }}">
 
                     {{-- Cari Produk --}}
                     <div class="space-y-3">
@@ -185,13 +185,19 @@
                                 Tanggal Masuk
                             </label>
 
-                            <div class="relative">
-                                <input type="text" id="tanggal_masuk_display" readonly
-                                    class="w-full rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500 cursor-pointer">
+                            <div class="flex gap-3">
+                                <div class="relative flex-1">
+                                    <input type="text" id="tanggal_masuk_display" readonly
+                                        class="w-full rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500 cursor-pointer">
 
-                                <input type="date" id="tanggal_masuk_picker"
-                                    value="{{ old('tanggal_masuk', now()->toDateString()) }}"
-                                    class="absolute inset-0 opacity-0 cursor-pointer">
+                                    <input type="date" id="tanggal_masuk_picker"
+                                        value="{{ old('tanggal_masuk') ? \Carbon\Carbon::parse(old('tanggal_masuk'))->toDateString() : now()->toDateString() }}"
+                                        class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+
+                                <input type="time" id="tanggal_masuk_time"
+                                    value="{{ old('tanggal_masuk') ? \Carbon\Carbon::parse(old('tanggal_masuk'))->format('H:i') : now()->format('H:i') }}"
+                                    class="w-32 rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
                             </div>
 
                             @error('tanggal_masuk')
@@ -286,6 +292,7 @@
         const tanggalMasukInput = document.getElementById('tanggal_masuk');
         const tanggalMasukDisplay = document.getElementById('tanggal_masuk_display');
         const tanggalMasukPicker = document.getElementById('tanggal_masuk_picker');
+        const tanggalMasukTime = document.getElementById('tanggal_masuk_time');
 
         const selectedProductCard = document.getElementById('selectedProductCard');
         const selectedProductName = document.getElementById('selectedProductName');
@@ -326,21 +333,25 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
         }
 
-        function formatTanggalIndonesia(dateString) {
+        function formatTanggalIndonesia(dateString, timeString) {
             if (!dateString) return '';
 
-            const date = new Date(dateString + 'T00:00:00');
+            const date = new Date(dateString + 'T' + (timeString || '00:00') + ':00');
 
             return new Intl.DateTimeFormat('id-ID', {
                 day: '2-digit',
                 month: 'long',
-                year: 'numeric'
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
             }).format(date);
         }
 
         function updateTanggalDisplay() {
-            tanggalMasukInput.value = tanggalMasukPicker.value;
-            tanggalMasukDisplay.value = formatTanggalIndonesia(tanggalMasukPicker.value);
+            const date = tanggalMasukPicker.value;
+            const time = tanggalMasukTime.value || '00:00';
+            tanggalMasukInput.value = date + ' ' + time + ':00';
+            tanggalMasukDisplay.value = formatTanggalIndonesia(date, time);
         }
 
         function showProductList() {
@@ -425,6 +436,7 @@
         });
 
         tanggalMasukPicker?.addEventListener('change', updateTanggalDisplay);
+        tanggalMasukTime?.addEventListener('change', updateTanggalDisplay);
 
         document.addEventListener('click', function(event) {
             const isClickInside =

@@ -30,6 +30,26 @@
                 </div>
             @endif
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Total Kasir</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $cashiers->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Kasir terdaftar</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Kasir Aktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $cashiers->where('status', 'active')->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Siap melayani</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Kasir Nonaktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $cashiers->where('status', 'inactive')->count() }}</h2>
+                    <p class="text-xs font-semibold text-red-600 mt-3">Perlu perhatian</p>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200">
                     <h2 class="text-xl font-black text-slate-900">
@@ -41,6 +61,7 @@
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr class="text-slate-500">
+                                <th class="px-6 py-4 text-left w-12">No</th>
                                 <th class="px-6 py-4 text-left">Nama</th>
                                 <th class="px-6 py-4 text-left">Username</th>
                                 <th class="px-6 py-4 text-left">Email</th>
@@ -53,6 +74,9 @@
                         <tbody>
                             @forelse ($cashiers as $cashier)
                                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-6 py-5 text-slate-500 font-bold text-center">
+                                        {{ $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $cashier->first_name }} {{ $cashier->last_name }}
                                     </td>
@@ -114,7 +138,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                                    <td colspan="7" class="px-6 py-10 text-center text-slate-500">
                                         Belum ada data kasir.
                                     </td>
                                 </tr>

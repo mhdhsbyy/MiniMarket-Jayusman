@@ -106,7 +106,7 @@
                             @forelse ($transactions as $transaction)
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-6 py-5 text-sm text-slate-600">
-                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}
+                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
                                     </td>
 
                                     <td class="px-6 py-5">

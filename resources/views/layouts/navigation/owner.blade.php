@@ -3,7 +3,7 @@
         <div class="h-20 flex items-center justify-between ">
 
             <!-- Brand -->
-            <a href="{{ route('warehouse.dashboard') }}" class="flex items-center gap-3">
+            <a href="{{ route('owner.dashboard') }}" class="flex items-center gap-3">
                 <div>
                     <h1 class="text-xl font-black tracking-tight text-white">
                         JAYUSMART
@@ -87,24 +87,45 @@
                 </div>
 
                 <!-- Monitoring -->
-                {{-- Transaksi --}}
-                <a href="{{ route('owner.monitoring-transactions.index')}}"
-                    class="px-5 py-2.5 rounded-full text-sm font-bold transition
-                    {{ request()->routeIs('owner.monitoring-transactions.*')
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:text-white hover:bg-white/10' }}">
-                    Monitoring Transaksi
-                </a>
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = ! open"
+                        class="px-5 py-2.5 rounded-full text-sm font-bold transition
+                        {{ request()->routeIs('owner.monitoring-transactions.*') ||
+                        request()->routeIs('owner.monitoring-stocks.*') ||
+                        request()->routeIs('owner.monitoring-incoming-goods.*')
+                            ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                            : 'text-slate-300 hover:text-white hover:bg-white/10' }}">
+                        Monitoring ▾
+                    </button>
 
-                {{-- Stok --}}
-                <a href="{{ route('owner.monitoring-stocks.index') }}"
-                    class="px-5 py-2.5 rounded-full text-sm font-bold transition
-                    {{ request()->routeIs('owner.monitoring-stocks.*')
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:text-white hover:bg-white/10' }}">
-                    Monitoring Stok
-                </a>
+                    <div x-show="open" x-transition @click.away="open = false"
+                        class="absolute left-0 mt-3 w-60 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
 
+                        <a href="{{ route('owner.monitoring-transactions.index') }}"
+                            class="block px-5 py-3 text-sm font-bold transition
+                            {{ request()->routeIs('owner.monitoring-transactions.*')
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'text-slate-700 hover:bg-slate-50' }}">
+                            Monitoring Transaksi
+                        </a>
+
+                        <a href="{{ route('owner.monitoring-stocks.index') }}"
+                            class="block px-5 py-3 text-sm font-bold transition
+                            {{ request()->routeIs('owner.monitoring-stocks.*')
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'text-slate-700 hover:bg-slate-50' }}">
+                            Monitoring Stok
+                        </a>
+
+                        <a href="{{ route('owner.monitoring-incoming-goods.index') }}"
+                            class="block px-5 py-3 text-sm font-bold transition
+                            {{ request()->routeIs('owner.monitoring-incoming-goods.*')
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'text-slate-700 hover:bg-slate-50' }}">
+                            Monitoring Barang Masuk
+                        </a>
+                    </div>
+                </div>
 
             </div>
 
@@ -194,9 +215,9 @@
                 Kelola Cabang
             </a>
 
-            <a href="#"
+            <a href="{{ route('owner.managers.index') }}"
                 class="block px-5 py-3 rounded-2xl text-sm font-bold
-                {{ request()->routeIs('owner.kelola-manager')
+                {{ request()->routeIs('owner.managers.*')
                     ? 'bg-emerald-500 text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                 Kelola Manajer
@@ -230,37 +251,45 @@
                 Monitoring
             </p>
 
-            <a href="#"
+            <a href="{{ route('owner.monitoring-transactions.index') }}"
                 class="block px-5 py-3 rounded-2xl text-sm font-bold
-                {{ request()->routeIs('owner.monitoring-transaksi')
+                {{ request()->routeIs('owner.monitoring-transactions.*')
                     ? 'bg-emerald-500 text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                 Monitoring Transaksi
             </a>
 
-            <a href="#"
+            <a href="{{ route('owner.monitoring-stocks.index') }}"
                 class="block px-5 py-3 rounded-2xl text-sm font-bold
-                {{ request()->routeIs('owner.monitoring-stok')
+                {{ request()->routeIs('owner.monitoring-stocks.*')
                     ? 'bg-emerald-500 text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                 Monitoring Stok
+            </a>
+
+            <a href="{{ route('owner.monitoring-incoming-goods.index') }}"
+                class="block px-5 py-3 rounded-2xl text-sm font-bold
+                {{ request()->routeIs('owner.monitoring-incoming-goods.*')
+                    ? 'bg-emerald-500 text-white'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
+                Monitoring Barang Masuk
             </a>
 
             <p class="px-5 pt-4 text-xs font-black text-emerald-300 uppercase tracking-widest">
                 Laporan
             </p>
 
-            <a href="#"
+            <a href="{{ route('owner.monitoring-transactions.index') }}"
                 class="block px-5 py-3 rounded-2xl text-sm font-bold
-                {{ request()->routeIs('owner.laporan-penjualan')
+                {{ request()->routeIs('owner.monitoring-transactions.*')
                     ? 'bg-emerald-500 text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                 Laporan Penjualan
             </a>
 
-            <a href="#"
+            <a href="{{ route('owner.monitoring-stocks.index') }}"
                 class="block px-5 py-3 rounded-2xl text-sm font-bold
-                {{ request()->routeIs('owner.laporan-stok')
+                {{ request()->routeIs('owner.monitoring-stocks.*')
                     ? 'bg-emerald-500 text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                 Laporan Stok

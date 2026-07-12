@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -23,7 +24,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => [
+                'required',
+                'max:255',
+                'regex:/^[a-zA-Z\s]+$/',
+            ],
+        ], [
+            'nama.required' => 'Nama kategori wajib di isi.',
+            'nama.regex' => 'Nama kategori harus karakter.',
         ]);
 
         Category::create($request->only('nama'));
@@ -40,7 +48,14 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => [
+                'required',
+                'max:255',
+                'regex:/^[a-zA-Z\s]+$/',
+            ],
+        ], [
+            'nama.required' => 'Nama kategori wajib di isi.',
+            'nama.regex' => 'Nama kategori harus karakter.',
         ]);
 
         $category->update($request->only('nama'));
@@ -51,6 +66,11 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        if (Product::where('category_id', $category->id)->exists()) {
+            return redirect()->route('owner.categories.index')
+                ->with('error', 'Kategori tidak dapat dihapus karena masih memiliki produk.');
+        }
+
         $category->delete();
 
         return redirect()->route('owner.categories.index')

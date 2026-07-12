@@ -24,6 +24,38 @@
                 </a>
             </div>
 
+            @if (session('success'))
+                <div class="mb-6 px-5 py-4 rounded-2xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 px-5 py-4 rounded-2xl bg-red-50 text-red-700 font-bold border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Total Produk</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $products->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Produk terdaftar</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Produk Aktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $products->where('status', 'active')->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Produk tersedia</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Produk Nonaktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $products->where('status', 'inactive')->count() }}</h2>
+                    <p class="text-xs font-semibold text-red-600 mt-3">Produk tidak aktif</p>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>

@@ -123,7 +123,7 @@
     <div class="info">
         <p><strong>Cabang:</strong> {{ $branch ? $branch->nama : 'Semua Cabang' }}</p>
         <p><strong>Kategori:</strong> {{ $category ? $category->nama : 'Semua Kategori' }}</p>
-        <p><strong>Tanggal Cetak:</strong> {{ now()->timezone('Asia/Jakarta')->format('d M Y H:i') }}</p>
+        <p><strong>Tanggal Cetak:</strong> {{ now()->timezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}</p>
     </div>
 
     <div class="summary">

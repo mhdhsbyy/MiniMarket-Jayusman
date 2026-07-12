@@ -28,6 +28,26 @@
                 </div>
             @endif
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Total Gudang</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $warehouses->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Pegawai terdaftar</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Gudang Aktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $warehouses->where('status', 'active')->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Siap bertugas</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Gudang Nonaktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $warehouses->where('status', 'inactive')->count() }}</h2>
+                    <p class="text-xs font-semibold text-red-600 mt-3">Perlu perhatian</p>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200">
                     <h2 class="text-xl font-black text-slate-900">
@@ -39,6 +59,7 @@
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr class="text-slate-500">
+                                <th class="px-6 py-4 text-left w-12">No</th>
                                 <th class="px-6 py-4 text-left">Nama</th>
                                 <th class="px-6 py-4 text-left">Username</th>
                                 <th class="px-6 py-4 text-left">Email</th>
@@ -51,6 +72,9 @@
                         <tbody>
                             @forelse ($warehouses as $warehouse)
                                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-6 py-5 text-slate-500 font-bold text-center">
+                                        {{ $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $warehouse->first_name }} {{ $warehouse->last_name }}
                                     </td>
@@ -108,7 +132,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                                    <td colspan="7" class="px-6 py-10 text-center text-slate-500">
                                         Belum ada data pegawai gudang.
                                     </td>
                                 </tr>

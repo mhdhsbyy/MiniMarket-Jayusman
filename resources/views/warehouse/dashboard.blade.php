@@ -175,7 +175,7 @@
                             </h2>
 
                             <p class="text-sm text-slate-500 mt-1">
-                                6 aktivitas barang masuk terakhir.
+                                5 aktivitas barang masuk terakhir.
                             </p>
                         </div>
 
@@ -204,7 +204,7 @@
                                             </p>
 
                                             <p class="text-xs text-slate-400 mt-1">
-                                                Supplier: {{ $item->supplier->nama ?? '-' }}
+                                                Supplier: {{ $item->product->supplier->nama ?? '-' }}
                                             </p>
                                         </td>
 
@@ -215,7 +215,7 @@
                                         </td>
 
                                         <td class="px-6 py-5 text-sm text-slate-600">
-                                            {{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($item->tanggal_masuk)->translatedFormat('d F Y H:i') }}
                                         </td>
                                     </tr>
                                 @empty

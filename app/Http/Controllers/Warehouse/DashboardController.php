@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         $warehouse = Auth::user();
-        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+        $branchId = $warehouse->branch_id;
 
         $totalProduk = Stock::where('branch_id', $branchId)->count();
 
@@ -27,17 +27,17 @@ class DashboardController extends Controller
             ->where('jumlah_stok', 0)
             ->count();
 
-        $recentIncomingGoods = IncomingGood::with(['product', 'supplier'])
+        $recentIncomingGoods = IncomingGood::with(['product.supplier'])
             ->where('branch_id', $branchId)
             ->latest('tanggal_masuk')
-            ->take(6)
+            ->take(5)
             ->get();
 
         $lowStocks = Stock::with('product')
             ->where('branch_id', $branchId)
             ->where('jumlah_stok', '<', 30)
             ->orderBy('jumlah_stok')
-            ->take(6)
+            ->take(5)
             ->get();
 
         return view('warehouse.dashboard', compact(

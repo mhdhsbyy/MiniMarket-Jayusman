@@ -15,7 +15,7 @@ class IncomingGoodController extends Controller
     public function index(Request $request)
     {
         $warehouse = Auth::user();
-        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+        $branchId = $warehouse->branch_id;
 
         $query = IncomingGood::with([
             'product.category',
@@ -38,31 +38,27 @@ class IncomingGoodController extends Controller
             });
         }
 
-        if ($request->filled('tanggal_awal')) {
-            $query->whereDate('tanggal_masuk', '>=', $request->tanggal_awal);
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate('tanggal_masuk', '>=', $request->tanggal_mulai);
         }
 
-        if ($request->filled('tanggal_akhir')) {
-            $query->whereDate('tanggal_masuk', '<=', $request->tanggal_akhir);
+        if ($request->filled('tanggal_selesai')) {
+            $query->whereDate('tanggal_masuk', '<=', $request->tanggal_selesai);
         }
+
+        $totalBarangMasuk = (clone $query)->count();
+        $totalJumlahMasuk = (clone $query)->sum('jumlah');
+        $totalBiaya = (clone $query)->select(DB::raw('COALESCE(SUM(harga_beli * jumlah), 0) as total'))->value('total');
 
         $incomingGoods = $query->latest('tanggal_masuk')
-            ->paginate(5)
+            ->paginate(10)
             ->withQueryString();
-
-        $totalBarangMasuk = IncomingGood::where('branch_id', $branchId)->count();
-
-        $totalJumlahMasuk = IncomingGood::where('branch_id', $branchId)->sum('jumlah');
-
-        $barangMasukHariIni = IncomingGood::where('branch_id', $branchId)
-            ->whereDate('tanggal_masuk', now())
-            ->sum('jumlah');
 
         return view('warehouse.incoming-goods.index', compact(
             'incomingGoods',
             'totalBarangMasuk',
             'totalJumlahMasuk',
-            'barangMasukHariIni'
+            'totalBiaya',
         ));
     }
 
@@ -70,6 +66,9 @@ class IncomingGoodController extends Controller
     {
         $products = Product::with(['supplier', 'category'])
             ->where('status', 'active')
+            ->whereHas('supplier', function ($q) {
+                $q->where('status', 'active');
+            })
             ->orderBy('nama')
             ->get();
 
@@ -86,9 +85,21 @@ class IncomingGoodController extends Controller
         ]);
 
         $warehouse = Auth::user();
-        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+        $branchId = $warehouse->branch_id;
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::with('supplier')->findOrFail($request->product_id);
+
+        if ($product->status !== 'active') {
+            return back()
+                ->withInput()
+                ->with('error', 'Produk '.$product->nama.' tidak aktif, tidak bisa menambah stok.');
+        }
+
+        if ($product->supplier && $product->supplier->status !== 'active') {
+            return back()
+                ->withInput()
+                ->with('error', 'Supplier '.$product->supplier->nama.' tidak aktif, tidak bisa menambah stok produk ini.');
+        }
 
         DB::transaction(function () use ($request, $warehouse, $branchId, $product) {
             IncomingGood::create([
@@ -127,7 +138,7 @@ class IncomingGoodController extends Controller
     public function show(IncomingGood $incomingGood)
     {
         $warehouse = Auth::user();
-        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+        $branchId = $warehouse->branch_id;
 
         abort_if($incomingGood->branch_id != $branchId, 403);
 

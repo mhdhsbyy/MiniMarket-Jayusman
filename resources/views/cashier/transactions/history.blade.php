@@ -23,9 +23,53 @@
                 </a>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm font-black text-slate-500 uppercase">
+                        Total Transaksi
+                    </p>
+
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">
+                        {{ $totalTransaksi }}
+                    </h2>
+
+                    <p class="text-sm text-slate-400 mt-2">
+                        Riwayat transaksi kasir
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm font-black text-slate-500 uppercase">
+                        Total Nominal
+                    </p>
+
+                    <h2 class="text-4xl font-black text-emerald-700 mt-3">
+                        Rp {{ number_format($totalNominal, 0, ',', '.') }}
+                    </h2>
+
+                    <p class="text-sm text-slate-400 mt-2">
+                        Akumulasi seluruh transaksi
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm font-black text-slate-500 uppercase">
+                        Total Item Terjual
+                    </p>
+
+                    <h2 class="text-4xl font-black text-amber-700 mt-3">
+                        {{ number_format($totalItem, 0, ',', '.') }}
+                    </h2>
+
+                    <p class="text-sm text-slate-400 mt-2">
+                        Seluruh item yang terjual
+                    </p>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
 
-                <div class="p-6 border-b border-slate-200">
+                <form method="GET" id="filterForm" class="p-6 border-b border-slate-200">
                     <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                         <div class="md:col-span-2">
                             <label class="text-sm font-black text-slate-600">
@@ -43,8 +87,10 @@
                                 Tanggal Mulai
                             </label>
 
-                            <input type="date" id="filterStartDate"
-                                class="mt-2 w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                            <input type="text" name="tanggal_mulai" id="tanggal_mulai"
+                                value="{{ request('tanggal_mulai') }}"
+                                placeholder="dd/mm/yyyy"
+                                class="datepicker w-full mt-2 rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
                         </div>
 
                         <div>
@@ -52,8 +98,10 @@
                                 Tanggal Selesai
                             </label>
 
-                            <input type="date" id="filterEndDate"
-                                class="mt-2 w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                            <input type="text" name="tanggal_selesai" id="tanggal_selesai"
+                                value="{{ request('tanggal_selesai') }}"
+                                placeholder="dd/mm/yyyy"
+                                class="datepicker w-full mt-2 rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
                         </div>
 
                         <div>
@@ -61,27 +109,28 @@
                                 Status
                             </label>
 
-                            <select id="filterStatus"
+                            <select name="status" id="filterStatus" onchange="this.form.submit()"
                                 class="mt-2 w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
                                 <option value="">Semua Status</option>
-                                <option value="success">Selesai</option>
-                                <option value="cancelled">Batal</option>
+                                <option value="success" {{ request('status') == 'success' ? 'selected' : '' }}>Selesai</option>
+                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Batal</option>
                             </select>
                         </div>
 
                         <div class="flex items-end">
-                            <button type="button" id="resetFilter"
-                                class="w-full py-[13px] rounded-2xl bg-slate-100 text-slate-700 font-black text-sm hover:bg-slate-200 transition">
+                            <a href="{{ route('cashier.transactions.history') }}"
+                                class="w-full flex items-center justify-center py-[13px] rounded-2xl bg-slate-100 text-slate-700 font-black text-sm hover:bg-slate-200 transition">
                                 Reset
-                            </button>
+                            </a>
                         </div>
                     </div>
-                </div>
+                </form>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kode</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Tanggal</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Item</th>
@@ -96,7 +145,7 @@
                                 @php
                                     $kodeTransaksi = 'TRX-' . str_pad($transaction->id, 5, '0', STR_PAD_LEFT);
                                     $tanggalRaw = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('Y-m-d');
-                                    $tanggal = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i');
+                                    $tanggal = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i');
                                     $totalItem = $transaction->details->sum('jumlah');
                                 @endphp
 
@@ -104,6 +153,9 @@
                                     data-code="{{ strtolower($kodeTransaksi) }}"
                                     data-date="{{ $tanggalRaw }}"
                                     data-status="{{ $transaction->status }}">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ ($transactions->currentPage() - 1) * $transactions->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $kodeTransaksi }}
                                     </td>
@@ -141,14 +193,14 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                    <td colspan="7" class="px-6 py-16 text-center text-slate-500 font-bold">
                                         Belum ada transaksi.
                                     </td>
                                 </tr>
                             @endforelse
 
                             <tr id="emptyTransactionRow" class="hidden">
-                                <td colspan="6" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                <td colspan="7" class="px-6 py-16 text-center text-slate-500 font-bold">
                                     Transaksi tidak ditemukan.
                                 </td>
                             </tr>
@@ -164,35 +216,37 @@
         </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
             const searchTransaction = document.getElementById('searchTransaction');
-            const filterStartDate = document.getElementById('filterStartDate');
-            const filterEndDate = document.getElementById('filterEndDate');
-            const filterStatus = document.getElementById('filterStatus');
-            const resetFilter = document.getElementById('resetFilter');
             const transactionRows = document.querySelectorAll('.transaction-row');
             const emptyTransactionRow = document.getElementById('emptyTransactionRow');
 
+            flatpickr('#tanggal_mulai, #tanggal_selesai', {
+                altInput: true,
+                altFormat: 'd/m/Y',
+                dateFormat: 'Y-m-d',
+                locale: 'id',
+                allowInput: true,
+                onChange: function() {
+                    filterForm.submit();
+                }
+            });
+
             function filterTransactions() {
                 const keyword = searchTransaction.value.toLowerCase().trim();
-                const startDate = filterStartDate.value;
-                const endDate = filterEndDate.value;
-                const status = filterStatus.value;
-
                 let visibleCount = 0;
 
                 transactionRows.forEach(row => {
                     const code = row.dataset.code || '';
-                    const date = row.dataset.date || '';
-                    const rowStatus = row.dataset.status || '';
+                    const match = code.includes(keyword);
 
-                    const matchSearch = code.includes(keyword);
-                    const matchStatus = status === '' || rowStatus === status;
-                    const matchStart = startDate === '' || date >= startDate;
-                    const matchEnd = endDate === '' || date <= endDate;
-
-                    if (matchSearch && matchStatus && matchStart && matchEnd) {
+                    if (match) {
                         row.style.display = '';
                         visibleCount++;
                     } else {
@@ -206,18 +260,6 @@
             }
 
             searchTransaction.addEventListener('input', filterTransactions);
-            filterStartDate.addEventListener('change', filterTransactions);
-            filterEndDate.addEventListener('change', filterTransactions);
-            filterStatus.addEventListener('change', filterTransactions);
-
-            resetFilter.addEventListener('click', function() {
-                searchTransaction.value = '';
-                filterStartDate.value = '';
-                filterEndDate.value = '';
-                filterStatus.value = '';
-
-                filterTransactions();
-            });
         });
     </script>
 </x-app-layout>

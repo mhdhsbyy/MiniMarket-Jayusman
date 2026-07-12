@@ -112,7 +112,7 @@
                                         Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}
                                     </p>
                                     <p class="text-sm text-slate-500 mt-1">
-                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y') }}
                                     </p>
                                 </div>
                             </div>

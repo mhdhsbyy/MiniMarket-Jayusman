@@ -11,6 +11,7 @@ class SupplierSeeder extends Seeder
     {
         Supplier::insert([
             [
+                'kode' => 'IDF',
                 'nama' => 'PT Indofood',
                 'telepon' => '081234567001',
                 'alamat' => 'Jakarta',
@@ -19,6 +20,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'kode' => 'WNG',
                 'nama' => 'PT Wings Food',
                 'telepon' => '081234567002',
                 'alamat' => 'Surabaya',
@@ -27,6 +29,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'kode' => 'MYR',
                 'nama' => 'PT Mayora',
                 'telepon' => '081234567003',
                 'alamat' => 'Tangerang',
@@ -35,6 +38,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'kode' => 'UNL',
                 'nama' => 'PT Unilever Indonesia',
                 'telepon' => '081234567004',
                 'alamat' => 'Jakarta',
@@ -43,6 +47,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'kode' => 'TIR',
                 'nama' => 'PT Tirta Investama',
                 'telepon' => '081234567005',
                 'alamat' => 'Bogor',

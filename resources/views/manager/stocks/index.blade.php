@@ -125,6 +125,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Produk</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kategori</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Stok</th>
@@ -151,6 +152,9 @@
 
                                 <tr class="stock-row hover:bg-slate-50 transition"
                                     data-search="{{ strtolower($namaProduk . ' ' . $namaKategori . ' ' . $stock->jumlah_stok . ' ' . $satuan . ' ' . $statusLabel) }}">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ ($stocks->currentPage() - 1) * $stocks->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $namaProduk }}
                                     </td>
@@ -185,14 +189,14 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
                                         Tidak ada data stok.
                                     </td>
                                 </tr>
                             @endforelse
 
                             <tr id="emptySearchRow" class="hidden">
-                                <td colspan="5" class="px-6 py-16 text-center text-slate-500">
+                                <td colspan="6" class="px-6 py-16 text-center text-slate-500">
                                     Data stok tidak ditemukan.
                                 </td>
                             </tr>

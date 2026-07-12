@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionDetail extends Model
 {
+    protected $casts = [
+        'harga_satuan' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+    ];
+
     protected $fillable = [
         'transaction_id',
         'product_id',

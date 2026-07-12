@@ -24,19 +24,19 @@
                                 Cabang
                             </label>
 
-                            <select name="cabang_id"
+                            <select name="branch_id"
                                 class="w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:ring-emerald-500">
                                 <option value="">-- Pilih Cabang --</option>
 
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}"
-                                        {{ old('cabang_id', $manager->cabang_id) == $branch->id ? 'selected' : '' }}>
+                                        {{ old('branch_id', $manager->branch_id) == $branch->id ? 'selected' : '' }}>
                                         {{ $branch->kode }} - {{ $branch->nama }} ({{ $branch->kota }})
                                     </option>
                                 @endforeach
                             </select>
 
-                            @error('cabang_id')
+                            @error('branch_id')
                                 <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                             @enderror
                         </div>
