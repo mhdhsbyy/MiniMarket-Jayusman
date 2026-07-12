@@ -186,6 +186,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kode</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Tanggal</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Total</th>
@@ -198,10 +199,13 @@
                             @forelse ($transaksiTerbaru as $transaction)
                                 @php
                                     $kodeTransaksi = 'TRX-' . str_pad($transaction->id, 5, '0', STR_PAD_LEFT);
-                                    $tanggalTransaksi = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i');
+                                    $tanggalTransaksi = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i');
                                 @endphp
 
                                 <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $kodeTransaksi }}
                                     </td>
@@ -235,7 +239,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
                                         Belum ada transaksi.
                                     </td>
                                 </tr>

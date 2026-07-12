@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Stock;
 use App\Models\Category;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,8 +21,8 @@ class StockController extends Controller
         if ($request->filled('search')) {
             $query->whereHas('product', function ($q) use ($request) {
                 $q->where(function ($subQuery) use ($request) {
-                    $subQuery->where('nama', 'like', '%' . $request->search . '%')
-                        ->orWhere('kode', 'like', '%' . $request->search . '%');
+                    $subQuery->where('nama', 'like', '%'.$request->search.'%')
+                        ->orWhere('kode', 'like', '%'.$request->search.'%');
                 });
             });
         }
@@ -53,8 +53,8 @@ class StockController extends Controller
             ->withQueryString();
 
         $categories = Category::whereHas('products.stocks', function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })
+            $q->where('branch_id', $branchId);
+        })
             ->orderBy('nama')
             ->get();
 

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Branch;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BranchSeeder extends Seeder
@@ -15,7 +14,7 @@ class BranchSeeder extends Seeder
     {
         Branch::insert([
             [
-                'kode' => 'JMC001',
+                'kode' => 'JM001',
                 'nama' => 'Jayusmart Cianjur',
                 'kota' => 'Cianjur',
                 'alamat' => 'Jl. Siliwangi No. 12, Cianjur',
@@ -24,7 +23,7 @@ class BranchSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'JMC002',
+                'kode' => 'JM002',
                 'nama' => 'Jayusmart Bandung',
                 'kota' => 'Bandung',
                 'alamat' => 'Jl. Asia Afrika No. 45, Bandung',
@@ -33,7 +32,7 @@ class BranchSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'JMC003',
+                'kode' => 'JM003',
                 'nama' => 'Jayusmart Bogor',
                 'kota' => 'Bogor',
                 'alamat' => 'Jl. Pajajaran No. 88, Bogor',
@@ -42,7 +41,7 @@ class BranchSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'JMC004',
+                'kode' => 'JM004',
                 'nama' => 'Jayusmart Sukabumi',
                 'kota' => 'Sukabumi',
                 'alamat' => 'Jl. Ahmad Yani No. 21, Sukabumi',
@@ -51,10 +50,10 @@ class BranchSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'JMC005',
-                'nama' => 'Jayusmart Garut',
-                'kota' => 'Garut',
-                'alamat' => 'Jl. Guntur No. 10, Garut',
+                'kode' => 'JM005',
+                'nama' => 'Jayusmart Jakarta',
+                'kota' => 'Jakarta',
+                'alamat' => 'Jl. Guntur No. 10, Jakarta',
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),

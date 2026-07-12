@@ -79,13 +79,17 @@ class TransactionController extends Controller
                 foreach ($request->products as $item) {
                     $product = Product::findOrFail($item['product_id']);
 
+                    if ($product->status !== 'active') {
+                        throw new \Exception('Produk '.$product->nama.' tidak aktif dan tidak dapat dijual.');
+                    }
+
                     $stock = Stock::where('branch_id', $branchId)
                         ->where('product_id', $product->id)
                         ->lockForUpdate()
                         ->first();
 
-                    if (!$stock || $stock->jumlah_stok < $item['jumlah']) {
-                        throw new \Exception('Stok produk ' . $product->nama . ' tidak mencukupi.');
+                    if (! $stock || $stock->jumlah_stok < $item['jumlah']) {
+                        throw new \Exception('Stok produk '.$product->nama.' tidak mencukupi.');
                     }
 
                     $subtotal = $product->harga_jual * $item['jumlah'];
@@ -168,8 +172,7 @@ class TransactionController extends Controller
         $cashier = Auth::user();
         $branchId = $cashier->branch_id;
 
-        $query = Transaction::with(['details.product'])
-            ->where('cashier_id', $cashier->id)
+        $query = Transaction::where('cashier_id', $cashier->id)
             ->where('branch_id', $branchId);
 
         if ($request->filled('tanggal_mulai')) {
@@ -184,11 +187,22 @@ class TransactionController extends Controller
             $query->where('status', $request->status);
         }
 
-        $transactions = $query->latest('tanggal_transaksi')
+        $totalTransaksi = (clone $query)->count();
+        $totalNominal = (clone $query)->sum('total_bayar');
+        $totalItem = TransactionDetail::whereIn('transaction_id', (clone $query)->select('id'))
+            ->sum('jumlah');
+
+        $transactions = $query->with(['details.product'])
+            ->latest('tanggal_transaksi')
             ->paginate(10)
             ->withQueryString();
 
-        return view('cashier.transactions.history', compact('transactions'));
+        return view('cashier.transactions.history', compact(
+            'transactions',
+            'totalTransaksi',
+            'totalNominal',
+            'totalItem',
+        ));
     }
 
     public function receipt(Transaction $transaction)
@@ -210,6 +224,6 @@ class TransactionController extends Controller
         $pdf = Pdf::loadView('cashier.transactions.receipt', compact('transaction'))
             ->setPaper([0, 0, 226.77, 600], 'portrait');
 
-        return $pdf->stream('struk-transaksi-' . $transaction->id . '.pdf');
+        return $pdf->stream('struk-transaksi-'.$transaction->id.'.pdf');
     }
 }

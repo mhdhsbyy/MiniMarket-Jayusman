@@ -177,7 +177,7 @@
         <tr>
             <td class="label">Tanggal Cetak</td>
             <td class="separator">:</td>
-            <td>{{ now()->format('d M Y H:i') }}</td>
+            <td>{{ now()->translatedFormat('d F Y H:i') }}</td>
         </tr>
 
         @if (request('category_id'))

@@ -23,6 +23,32 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="mb-6 px-5 py-4 rounded-2xl bg-red-50 text-red-700 font-bold border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Total Supplier</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $suppliers->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Supplier terdaftar</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Supplier Aktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $suppliers->where('status', 'active')->count() }}</h2>
+                    <p class="text-xs font-semibold text-emerald-600 mt-3">Supplier aktif</p>
+                </div>
+
+                <div class="bg-white rounded-[1.7rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">Supplier Nonaktif</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $suppliers->where('status', 'inactive')->count() }}</h2>
+                    <p class="text-xs font-semibold text-red-600 mt-3">Supplier nonaktif</p>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
@@ -39,6 +65,7 @@
                         <thead class="bg-slate-50">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase">No</th>
+                                <th class="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase">Kode</th>
                                 <th class="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase">Nama Supplier</th>
                                 <th class="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase">Telepon</th>
                                 <th class="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase">Alamat</th>
@@ -52,6 +79,10 @@
                                 <tr class="supplier-row hover:bg-slate-50 transition">
                                     <td class="px-6 py-5 text-sm text-slate-500 row-number">
                                         {{ $loop->iteration }}
+                                    </td>
+
+                                    <td class="px-6 py-5 font-bold text-slate-900">
+                                        {{ $supplier->kode }}
                                     </td>
 
                                     <td class="px-6 py-5 font-bold text-slate-900 supplier-name">
@@ -100,14 +131,14 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                                    <td colspan="7" class="px-6 py-12 text-center text-slate-500">
                                         Belum ada data supplier.
                                     </td>
                                 </tr>
                             @endforelse
 
                             <tr id="emptySearchRow" class="hidden">
-                                <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                                <td colspan="7" class="px-6 py-12 text-center text-slate-500">
                                     Supplier tidak ditemukan.
                                 </td>
                             </tr>

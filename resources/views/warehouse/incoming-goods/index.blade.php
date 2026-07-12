@@ -2,7 +2,6 @@
     <div class="min-h-screen bg-[#f4f7f5]">
         <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
 
-            {{-- Header --}}
             <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                 <div>
                     <p class="text-sm font-bold text-emerald-700 uppercase tracking-widest">
@@ -10,16 +9,16 @@
                     </p>
 
                     <h1 class="text-4xl font-black text-slate-900 mt-3">
-                        Barang Masuk
+                        Riwayat Barang Masuk
                     </h1>
 
                     <p class="text-slate-500 mt-3">
-                        Kelola data barang masuk dan pembaruan stok cabang.
+                        Daftar barang masuk yang sudah dicatat oleh gudang.
                     </p>
                 </div>
 
                 <a href="{{ route('warehouse.incoming-goods.create') }}"
-                    class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black hover:bg-emerald-800 transition shadow-lg shadow-emerald-900/20 text-center">
+                    class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
                     Tambah Barang Masuk
                 </a>
             </div>
@@ -30,7 +29,6 @@
                 </div>
             @endif
 
-            {{-- Statistik --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
                     <p class="text-sm font-black text-slate-500 uppercase">
@@ -56,60 +54,64 @@
                     </h2>
 
                     <p class="text-sm text-slate-400 mt-2">
-                        Akumulasi semua barang
+                        Akumulasi seluruh barang
                     </p>
                 </div>
 
                 <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
                     <p class="text-sm font-black text-slate-500 uppercase">
-                        Masuk Hari Ini
+                        Total Biaya
                     </p>
 
-                    <h2 class="text-4xl font-black text-amber-600 mt-3">
-                        {{ number_format($barangMasukHariIni, 0, ',', '.') }}
+                    <h2 class="text-4xl font-black text-amber-700 mt-3">
+                        Rp {{ number_format($totalBiaya, 0, ',', '.') }}
                     </h2>
 
                     <p class="text-sm text-slate-400 mt-2">
-                        Jumlah barang hari ini
+                        Akumulasi biaya pembelian
                     </p>
                 </div>
             </div>
 
-            {{-- Table --}}
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-slate-900">
+                                Riwayat Barang Masuk
+                            </h2>
 
-                <div class="p-6 border-b border-slate-200 space-y-5">
-                    <div>
-                        <h2 class="text-xl font-black text-slate-900">
-                            Riwayat Barang Masuk
-                        </h2>
-
-                        <p class="text-sm text-slate-500 mt-1">
-                            Data barang masuk berdasarkan cabang Anda.
-                        </p>
+                            <p class="text-sm text-slate-500 mt-1">
+                                Cari berdasarkan produk, supplier, atau filter tanggal.
+                            </p>
+                        </div>
                     </div>
 
-                    <form id="incomingFilterForm" method="GET" class="grid grid-cols-1 lg:grid-cols-4 gap-3">
-                        <div class="lg:col-span-2">
-                            <input type="text"
-                                name="search"
-                                id="incomingSearch"
-                                value="{{ request('search') }}"
-                                placeholder="Cari produk, kode, kategori, atau supplier..."
-                                class="w-full rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
+                    <form method="GET" id="filterForm"
+                        class="flex flex-col md:flex-row md:items-center gap-4">
+
+                        <input type="text" name="search" id="searchIncoming"
+                            placeholder="Cari produk atau supplier..."
+                            autocomplete="off"
+                            value="{{ request('search') }}"
+                            class="w-full md:w-64 rounded-2xl border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+
+                        <div class="flex flex-wrap items-center gap-3 ml-auto">
+                            <input type="text" name="tanggal_mulai" id="tanggal_mulai"
+                                value="{{ request('tanggal_mulai') }}"
+                                placeholder="dd/mm/yyyy"
+                                class="datepicker w-40 rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+
+                            <input type="text" name="tanggal_selesai" id="tanggal_selesai"
+                                value="{{ request('tanggal_selesai') }}"
+                                placeholder="dd/mm/yyyy"
+                                class="datepicker w-40 rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+
+                            <a href="{{ route('warehouse.incoming-goods.index') }}"
+                                class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 text-sm font-black hover:bg-slate-200 transition">
+                                Reset
+                            </a>
                         </div>
-
-                        <input type="date"
-                            name="tanggal_awal"
-                            id="tanggalAwal"
-                            value="{{ request('tanggal_awal') }}"
-                            class="w-full rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
-
-                        <input type="date"
-                            name="tanggal_akhir"
-                            id="tanggalAkhir"
-                            value="{{ request('tanggal_akhir') }}"
-                            class="w-full rounded-2xl border-slate-200 text-sm font-bold text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
                     </form>
                 </div>
 
@@ -117,18 +119,35 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Produk</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Supplier</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase text-center">Jumlah</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Harga Beli</th>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Subtotal</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Tanggal</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase text-right">Aksi</th>
                             </tr>
                         </thead>
 
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-slate-100" id="incomingTableBody">
                             @forelse ($incomingGoods as $item)
-                                <tr class="hover:bg-slate-50 transition">
+                                @php
+                                    $searchText = strtolower(
+                                        ($item->product->nama ?? '') . ' ' .
+                                        ($item->product->kode ?? '') . ' ' .
+                                        ($item->product->category->nama ?? '') . ' ' .
+                                        ($item->product->supplier->nama ?? '')
+                                    );
+                                    $subtotal = $item->harga_beli * $item->jumlah;
+                                @endphp
+
+                                <tr class="incoming-row hover:bg-slate-50 transition"
+                                    data-search="{{ $searchText }}">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ ($incomingGoods->currentPage() - 1) * $incomingGoods->perPage() + $loop->iteration }}
+                                    </td>
+
                                     <td class="px-6 py-5">
                                         <p class="font-black text-slate-900">
                                             {{ $item->product->nama ?? '-' }}
@@ -139,7 +158,7 @@
                                         </p>
                                     </td>
 
-                                    <td class="px-6 py-5 text-sm text-slate-600 font-bold">
+                                    <td class="px-6 py-5 text-sm font-bold text-slate-600">
                                         {{ $item->product->supplier->nama ?? '-' }}
                                     </td>
 
@@ -153,8 +172,12 @@
                                         Rp {{ number_format($item->harga_beli, 0, ',', '.') }}
                                     </td>
 
-                                    <td class="px-6 py-5 text-sm text-slate-600">
-                                        {{ \Carbon\Carbon::parse($item->tanggal_masuk)->translatedFormat('d F Y') }}
+                                    <td class="px-6 py-5 font-black text-emerald-700">
+                                        Rp {{ number_format($subtotal, 0, ',', '.') }}
+                                    </td>
+
+                                    <td class="px-6 py-5 text-sm font-bold text-slate-600">
+                                        {{ \Carbon\Carbon::parse($item->tanggal_masuk)->translatedFormat('d F Y H:i') }}
                                     </td>
 
                                     <td class="px-6 py-5 text-right">
@@ -165,49 +188,84 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
-                                        Data barang masuk tidak ditemukan.
+                                <tr id="emptyIncomingRow">
+                                    <td colspan="8" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                        Belum ada barang masuk.
                                     </td>
                                 </tr>
                             @endforelse
+
+                            <tr id="emptySearchRow" class="hidden">
+                                <td colspan="8" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                    Barang masuk tidak ditemukan.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
-                @if ($incomingGoods->hasPages())
-                    <div class="px-6 py-5 border-t border-slate-200">
-                        {{ $incomingGoods->links() }}
-                    </div>
-                @endif
-
+                <div class="p-6 border-t border-slate-200">
+                    {{ $incomingGoods->links() }}
+                </div>
             </div>
 
         </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
     <script>
-        const incomingFilterForm = document.getElementById('incomingFilterForm');
-        const incomingSearch = document.getElementById('incomingSearch');
-        const tanggalAwal = document.getElementById('tanggalAwal');
-        const tanggalAkhir = document.getElementById('tanggalAkhir');
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterForm = document.getElementById('filterForm');
+            const searchInput = document.getElementById('searchIncoming');
+            const incomingRows = document.querySelectorAll('.incoming-row');
+            const emptyIncomingRow = document.getElementById('emptyIncomingRow');
+            const emptySearchRow = document.getElementById('emptySearchRow');
 
-        let incomingTypingTimer;
+            flatpickr('#tanggal_mulai, #tanggal_selesai', {
+                altInput: true,
+                altFormat: 'd/m/Y',
+                dateFormat: 'Y-m-d',
+                locale: 'id',
+                allowInput: true,
+                onChange: function () {
+                    filterForm.submit();
+                }
+            });
 
-        incomingSearch?.addEventListener('input', function () {
-            clearTimeout(incomingTypingTimer);
+            let searchTimer;
 
-            incomingTypingTimer = setTimeout(() => {
-                incomingFilterForm.submit();
-            }, 400);
-        });
+            function filterIncoming() {
+                const keyword = searchInput.value.toLowerCase().trim();
+                let visibleCount = 0;
 
-        tanggalAwal?.addEventListener('change', function () {
-            incomingFilterForm.submit();
-        });
+                incomingRows.forEach(function (row) {
+                    const text = row.dataset.search || '';
+                    const match = text.includes(keyword);
 
-        tanggalAkhir?.addEventListener('change', function () {
-            incomingFilterForm.submit();
+                    if (match) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (emptyIncomingRow) {
+                    emptyIncomingRow.style.display = 'none';
+                }
+
+                if (emptySearchRow) {
+                    emptySearchRow.classList.toggle('hidden', visibleCount > 0);
+                }
+            }
+
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(filterIncoming, 400);
+            });
         });
     </script>
 </x-app-layout>

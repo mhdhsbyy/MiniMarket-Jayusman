@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\IncomingGood;
+use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
-
 
 class BranchController extends Controller
 {
@@ -19,27 +20,27 @@ class BranchController extends Controller
     }
 
     public function show(Branch $branch)
-{
-    $branch->load([
-        'manager',
-        'employees',
-        'stocks.product.category',
-        'stocks.product.supplier',
-    ]);
+    {
+        $branch->load([
+            'manager',
+            'employees',
+            'stocks.product.category',
+            'stocks.product.supplier',
+        ]);
 
-    $totalProduk = $branch->stocks->count();
+        $totalProduk = $branch->stocks->count();
 
-    $totalKaryawan = $branch->employees->count();
+        $totalKaryawan = $branch->employees->count();
 
-    $totalStok = $branch->stocks->sum('jumlah_stok');
+        $totalStok = $branch->stocks->sum('jumlah_stok');
 
-    return view('owner.branches.show', compact(
-        'branch',
-        'totalProduk',
-        'totalKaryawan',
-        'totalStok'
-    ));
-}
+        return view('owner.branches.show', compact(
+            'branch',
+            'totalProduk',
+            'totalKaryawan',
+            'totalStok'
+        ));
+    }
 
     public function create()
     {
@@ -49,11 +50,31 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode' => 'required|string|max:20|unique:branches,kode',
-            'nama' => 'required|string|max:255',
-            'kota' => 'required|string|max:100',
+            'kode' => [
+                'required',
+                'max:20',
+                'unique:branches,kode',
+                'regex:/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/',
+            ],
+            'nama' => [
+                'required',
+                'max:255',
+            ],
+            'kota' => [
+                'required',
+                'max:100',
+                'regex:/^[a-zA-Z\s]+$/',
+            ],
             'alamat' => 'required|string',
             'status' => 'required|in:active,inactive',
+        ], [
+            'kode.required' => 'Kode cabang wajib di isi.',
+            'kode.regex' => 'Kode cabang harus gabungan antara karakter dan angka',
+            'kode.unique' => 'Kode cabang sudah digunakan.',
+            'nama.required' => 'Nama cabang wajib di isi.',
+            'kota.required' => 'Kota wajib di isi.',
+            'kota.regex' => 'Kota harus karakter.',
+            'alamat.required' => 'Alamat wajib di isi.',
         ]);
 
         Branch::create([
@@ -77,11 +98,31 @@ class BranchController extends Controller
     public function update(Request $request, Branch $branch)
     {
         $request->validate([
-            'kode' => 'required|string|max:20|unique:branches,kode,' . $branch->id,
-            'nama' => 'required|string|max:255',
-            'kota' => 'required|string|max:100',
+            'kode' => [
+                'required',
+                'max:20',
+                'unique:branches,kode,'.$branch->id,
+                'regex:/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/',
+            ],
+            'nama' => [
+                'required',
+                'max:255',
+            ],
+            'kota' => [
+                'required',
+                'max:100',
+                'regex:/^[a-zA-Z\s]+$/',
+            ],
             'alamat' => 'required|string',
             'status' => 'required|in:active,inactive',
+        ], [
+            'kode.required' => 'Kode cabang wajib di isi.',
+            'kode.regex' => 'Kode cabang harus gabungan antara karakter dan angka',
+            'kode.unique' => 'Kode cabang sudah digunakan.',
+            'nama.required' => 'Nama cabang wajib di isi.',
+            'kota.required' => 'Kota wajib di isi.',
+            'kota.regex' => 'Kota harus karakter.',
+            'alamat.required' => 'Alamat wajib di isi.',
         ]);
 
         $branch->update([
@@ -99,12 +140,15 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch)
     {
-        $hasUser = User::where('cabang_id', $branch->id)->exists();
+        $hasRelation = Transaction::where('branch_id', $branch->id)->exists()
+            || Stock::where('branch_id', $branch->id)->exists()
+            || IncomingGood::where('branch_id', $branch->id)->exists()
+            || User::where('branch_id', $branch->id)->exists();
 
-        if ($hasUser) {
+        if ($hasRelation) {
             return redirect()
                 ->route('owner.branches.index')
-                ->with('error', 'Cabang tidak dapat dihapus. Hapus atau pindahkan seluruh pegawai terlebih dahulu.');
+                ->with('error', 'Cabang tidak dapat dihapus. Pindahkan manager dan seluruh pegawai terlebih dahulu.');
         }
 
         $branch->delete();

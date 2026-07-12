@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Cashier;
 
 use App\Http\Controllers\Controller;
-use App\Models\Transaction;
 use App\Models\Stock;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller

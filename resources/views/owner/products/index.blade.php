@@ -23,6 +23,13 @@
                 </div>
             @endif
 
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm font-black text-slate-500 uppercase">Total Produk</p>
+                    <h2 class="text-4xl font-black text-slate-900 mt-3">{{ $totalProduk }}</h2>
+                </div>
+            </div>
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>

@@ -3,41 +3,37 @@
 use App\Http\Controllers\Cashier\DashboardController as CashierDashboardController;
 use App\Http\Controllers\Cashier\TransactionController as CashierTransactionController;
 use App\Http\Controllers\Manager\CashierController;
-use App\Http\Controllers\Owner\BranchController;
-use App\Http\Controllers\Owner\CategoryController;
-use App\Http\Controllers\Owner\DashboardController;
-use App\Http\Controllers\Owner\ManagerController;
-use App\Http\Controllers\Owner\MonitoringController;
-use App\Http\Controllers\Owner\ProductController;
-use App\Http\Controllers\Owner\StockMonitoringController;
-use App\Http\Controllers\Owner\StockReportController;
-use App\Http\Controllers\Owner\SupplierController;
-use App\Http\Controllers\Owner\TransactionMonitoringController;
-use App\Http\Controllers\Owner\TransactionReportController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Warehouse\IncomingGoodController;
-use App\Http\Controllers\Warehouse\StockController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Traits\HasRoles;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
-use App\Http\Controllers\Manager\MonitoringStockController;
-use App\Http\Controllers\Manager\MonitoringTransactionController;
+use App\Http\Controllers\Manager\IncomingGoodMonitoringController as ManagerIncomingGoodMonitoringController;
 use App\Http\Controllers\Manager\StockController as ManagerStockController;
 use App\Http\Controllers\Manager\SupervisorController;
 use App\Http\Controllers\Manager\TransactionController;
 use App\Http\Controllers\Manager\WarehouseController;
+use App\Http\Controllers\Owner\BranchController;
+use App\Http\Controllers\Owner\CategoryController;
+use App\Http\Controllers\Owner\DashboardController;
+use App\Http\Controllers\Owner\IncomingGoodMonitoringController;
+use App\Http\Controllers\Owner\ManagerController;
+use App\Http\Controllers\Owner\ProductController;
+use App\Http\Controllers\Owner\StockMonitoringController;
+use App\Http\Controllers\Owner\SupplierController;
+use App\Http\Controllers\Owner\TransactionMonitoringController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
+use App\Http\Controllers\Supervisor\IncomingGoodMonitoringController as SupervisorIncomingGoodMonitoringController;
 use App\Http\Controllers\Supervisor\StockController as SupervisorStockController;
 use App\Http\Controllers\Supervisor\TransactionController as SupervisorTransactionController;
 use App\Http\Controllers\Warehouse\DashboardController as WarehouseDashboardController;
-use App\Http\Controllers\Warehouse\StockController as WarehouseStockController;
 use App\Http\Controllers\Warehouse\IncomingGoodController as WarehouseIncomingGoodController;
+use App\Http\Controllers\Warehouse\StockController as WarehouseStockController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         if ($user->hasRole('owner')) {
@@ -65,7 +61,6 @@ Route::get('/', function () {
 
     return redirect()->route('login');
 });
-
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -100,9 +95,16 @@ Route::middleware(['auth', 'role:owner'])
         Route::get('/monitoring-transaksi', [TransactionMonitoringController::class, 'index'])->name('monitoring-transactions.index');
         Route::get('/monitoring-transaksi/{transaction}', [TransactionMonitoringController::class, 'show'])->name('monitoring-transactions.show');
         Route::get('/monitoring-transactions/pdf', [TransactionMonitoringController::class, 'pdf'])->name('monitoring-transactions.pdf');
+        Route::get('/monitoring-transactions/excel', [TransactionMonitoringController::class, 'excel'])->name('monitoring-transactions.excel');
         // monitoring stok
         Route::get('/monitoring-stok', [StockMonitoringController::class, 'index'])->name('monitoring-stocks.index');
         Route::get('/monitoring-stocks/pdf', [StockMonitoringController::class, 'pdf'])->name('monitoring-stocks.pdf');
+        Route::get('/monitoring-stocks/excel', [StockMonitoringController::class, 'excel'])->name('monitoring-stocks.excel');
+        // monitoring barang masuk
+        Route::get('/monitoring-barang-masuk', [IncomingGoodMonitoringController::class, 'index'])->name('monitoring-incoming-goods.index');
+        Route::get('/monitoring-barang-masuk/{incomingGood}', [IncomingGoodMonitoringController::class, 'show'])->name('monitoring-incoming-goods.show');
+        Route::get('/monitoring-incoming-goods/pdf', [IncomingGoodMonitoringController::class, 'pdf'])->name('monitoring-incoming-goods.pdf');
+        Route::get('/monitoring-incoming-goods/excel', [IncomingGoodMonitoringController::class, 'excel'])->name('monitoring-incoming-goods.excel');
     });
 
 // role manager
@@ -115,9 +117,12 @@ Route::middleware(['auth', 'role:manager'])
         Route::resource('cashiers', CashierController::class);
         Route::resource('warehouses', WarehouseController::class);
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::get('/transactions/pdf', [TransactionController::class, 'pdf'])->name('transactions.pdf');
         Route::get('/stocks', [ManagerStockController::class, 'index'])->name('stocks.index');
         Route::get('/stocks/pdf', [ManagerStockController::class, 'pdf'])->name('stocks.pdf');
+        Route::get('/incoming-goods', [ManagerIncomingGoodMonitoringController::class, 'index'])->name('incoming-goods.index');
+        Route::get('/incoming-goods/pdf', [ManagerIncomingGoodMonitoringController::class, 'pdf'])->name('incoming-goods.pdf');
     });
 
 // role supervisor
@@ -127,7 +132,9 @@ Route::middleware(['auth', 'role:supervisor'])
     ->group(function () {
         Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
         Route::get('/transactions', [SupervisorTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/{transaction}', [SupervisorTransactionController::class, 'show'])->name('transactions.show');
         Route::get('/stocks', [SupervisorStockController::class, 'index'])->name('stocks.index');
+        Route::get('/incoming-goods', [SupervisorIncomingGoodMonitoringController::class, 'index'])->name('incoming-goods.index');
     });
 
 // role cashier
@@ -173,4 +180,4 @@ Route::middleware(['auth', 'role:warehouse'])
         Route::resource('incoming-goods', WarehouseIncomingGoodController::class)->only(['index', 'create', 'store', 'show']);
     });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

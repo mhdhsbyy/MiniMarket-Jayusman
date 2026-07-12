@@ -24,6 +24,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="mb-6 px-5 py-4 rounded-2xl bg-red-50 text-red-700 font-bold border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-200 flex items-center justify-between gap-4">
                     <div>

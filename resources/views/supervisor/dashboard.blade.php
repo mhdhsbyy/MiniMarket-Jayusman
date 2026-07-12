@@ -204,7 +204,7 @@
                                     </p>
 
                                     <p class="text-sm text-slate-500 mt-1">
-                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}
+                                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
                                     </p>
                                 </div>
 

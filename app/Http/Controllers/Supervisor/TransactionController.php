@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -84,7 +84,7 @@ class TransactionController extends Controller
                 ->get();
 
             $labels = $chartData->map(function ($item) {
-                return 'Minggu ' . $item->minggu . ' - ' . $item->tahun;
+                return 'Minggu '.$item->minggu.' - '.$item->tahun;
             });
         } elseif ($periode == 'bulanan') {
             $chartData = $chartQuery
@@ -130,5 +130,18 @@ class TransactionController extends Controller
             'labels',
             'dataPendapatan'
         ));
+    }
+
+    public function show(Transaction $transaction)
+    {
+        $branchId = Auth::user()->branch_id;
+
+        if ($transaction->branch_id !== $branchId) {
+            abort(403);
+        }
+
+        $transaction->load(['cashier', 'details.product']);
+
+        return view('supervisor.transactions.show', compact('transaction'));
     }
 }

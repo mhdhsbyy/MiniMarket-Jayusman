@@ -168,7 +168,7 @@
 
     <div class="kop">
         <h1>Laporan Transaksi Mini Market Jayusman</h1>
-        <p>Cabang Bandung</p>
+        <p>{{ $manager->branch->nama ?? 'Cabang' }}</p>
     </div>
 
     <table class="info">
@@ -195,26 +195,26 @@
         <tr>
             <td class="label">Tanggal Cetak</td>
             <td class="separator">:</td>
-            <td>{{ now()->format('d M Y H:i') }}</td>
+            <td>{{ now()->translatedFormat('d F Y H:i') }}</td>
         </tr>
 
-        @if (request('tanggal_awal') || request('tanggal_akhir'))
+        @if (request('start_date') || request('end_date'))
             <tr>
                 <td class="label">Periode</td>
                 <td class="separator">:</td>
                 <td>
-                    {{ request('tanggal_awal') ? \Carbon\Carbon::parse(request('tanggal_awal'))->format('d M Y') : 'Awal' }}
+                    {{ request('start_date') ? \Carbon\Carbon::parse(request('start_date'))->translatedFormat('d F Y') : 'Awal' }}
                     -
-                    {{ request('tanggal_akhir') ? \Carbon\Carbon::parse(request('tanggal_akhir'))->format('d M Y') : 'Akhir' }}
+                    {{ request('end_date') ? \Carbon\Carbon::parse(request('end_date'))->translatedFormat('d F Y') : 'Akhir' }}
                 </td>
             </tr>
         @endif
 
-        @if (request('status'))
+        @if (request('periode') && request('periode') !== 'semua')
             <tr>
-                <td class="label">Status</td>
+                <td class="label">Filter</td>
                 <td class="separator">:</td>
-                <td>{{ ucfirst(request('status')) }}</td>
+                <td>{{ ucfirst(request('periode')) }}</td>
             </tr>
         @endif
     </table>
@@ -259,7 +259,7 @@
                     <td class="text-center">{{ $loop->iteration }}</td>
 
                     <td>
-                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i') }}
+                        {{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i') }}
                     </td>
 
                     <td>

@@ -18,10 +18,17 @@
                     </p>
                 </div>
 
-                <a href="{{ route('owner.monitoring-stocks.pdf', request()->query()) }}" target="_blank"
-                    class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
-                    Cetak Laporan PDF
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('owner.monitoring-stocks.excel', request()->query()) }}"
+                        class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
+                        Export Excel
+                    </a>
+
+                    <a href="{{ route('owner.monitoring-stocks.pdf', request()->query()) }}" target="_blank"
+                        class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
+                        Cetak Laporan PDF
+                    </a>
+                </div>
             </div>
 
             {{-- Statistic --}}
@@ -180,6 +187,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Produk</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kategori</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Cabang</th>
@@ -196,6 +204,7 @@
                                     $namaKategori = $stock->product->category->nama ?? '-';
                                     $namaCabang = $stock->branch->nama ?? '-';
                                     $kotaCabang = $stock->branch->kota ?? '-';
+                                    $nomor = $loop->iteration + ($stocks->currentPage() - 1) * $stocks->perPage();
 
                                     if ($stock->jumlah_stok == 0) {
                                         $statusLabel = 'Habis';
@@ -208,6 +217,9 @@
 
                                 <tr class="stock-row hover:bg-slate-50 transition"
                                     data-search="{{ strtolower($namaProduk . ' ' . $kodeProduk . ' ' . $namaKategori . ' ' . $namaCabang . ' ' . $kotaCabang . ' ' . $stock->jumlah_stok . ' ' . $statusLabel) }}">
+                                    <td class="px-6 py-5 text-sm text-slate-500">
+                                        {{ $nomor }}
+                                    </td>
                                     <td class="px-6 py-5">
                                         <p class="font-black text-slate-900">
                                             {{ $namaProduk }}
@@ -254,7 +266,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
                                         Tidak ada data stok ditemukan.
                                     </td>
                                 </tr>

@@ -12,7 +12,7 @@ class StockController extends Controller
     public function index(Request $request)
     {
         $warehouse = Auth::user();
-        $branchId = $warehouse->branch_id ?? $warehouse->cabang_id;
+        $branchId = $warehouse->branch_id;
 
         $query = Stock::with(['product.category', 'product.supplier'])
             ->where('branch_id', $branchId);

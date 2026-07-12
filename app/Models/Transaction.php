@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
+    protected $casts = [
+        'tanggal_transaksi' => 'datetime',
+        'total_bayar' => 'decimal:2',
+        'uang_dibayar' => 'decimal:2',
+        'kembalian' => 'decimal:2',
+    ];
+
     protected $fillable = [
         'branch_id',
         'cashier_id',

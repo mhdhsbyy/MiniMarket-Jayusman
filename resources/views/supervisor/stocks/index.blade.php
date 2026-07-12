@@ -138,6 +138,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kode</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Produk</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kategori</th>
@@ -151,6 +152,9 @@
                             @forelse ($stocks as $stock)
                                 <tr class="stock-row hover:bg-slate-50 transition"
                                     data-search="{{ strtolower(($stock->product->kode ?? '') . ' ' . ($stock->product->nama ?? '') . ' ' . ($stock->product->category->nama ?? '') . ' ' . ($stock->product->supplier->nama ?? '')) }}">
+                                    <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                        {{ ($stocks->currentPage() - 1) * $stocks->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="px-6 py-5">
                                         <p class="font-black text-slate-900">
                                             {{ $stock->product->kode ?? '-' }}
@@ -202,7 +206,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="7" class="px-6 py-16 text-center text-slate-500">
                                         Tidak ada data stok.
                                     </td>
                                 </tr>

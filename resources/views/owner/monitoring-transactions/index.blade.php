@@ -18,10 +18,17 @@
                     </p>
                 </div>
 
-                <a href="{{ route('owner.monitoring-transactions.pdf', request()->query()) }}" target="_blank"
-                    class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
-                    Cetak Laporan PDF
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('owner.monitoring-transactions.excel', request()->query()) }}"
+                        class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
+                        Export Excel
+                    </a>
+
+                    <a href="{{ route('owner.monitoring-transactions.pdf', request()->query()) }}" target="_blank"
+                        class="px-6 py-3 rounded-2xl bg-emerald-700 text-white font-black text-sm hover:bg-emerald-800 transition">
+                        Cetak Laporan PDF
+                    </a>
+                </div>
             </div>
 
             {{-- Statistic --}}
@@ -105,13 +112,13 @@
                             @endforeach
                         </select>
 
-                        <input type="date" name="start_date" value="{{ request('start_date') }}"
-                            onchange="document.getElementById('chartFilterForm').submit()"
-                            class="w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                        <input type="text" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                            placeholder="dd/mm/yyyy"
+                            class="datepicker w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
 
-                        <input type="date" name="end_date" value="{{ request('end_date') }}"
-                            onchange="document.getElementById('chartFilterForm').submit()"
-                            class="w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                        <input type="text" name="end_date" id="end_date" value="{{ request('end_date') }}"
+                            placeholder="dd/mm/yyyy"
+                            class="datepicker w-full rounded-2xl border-slate-200 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500">
 
                         <a href="{{ route('owner.monitoring-transactions.index') }}"
                             class="flex items-center justify-center px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 text-sm font-black hover:bg-slate-200 transition">
@@ -194,6 +201,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kode</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Tanggal</th>
                                 <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Cabang</th>
@@ -210,11 +218,15 @@
                                     $namaCabang = $transaction->branch->nama ?? '-';
                                     $kotaCabang = $transaction->branch->kota ?? '-';
                                     $namaKasir = trim(($transaction->cashier->first_name ?? '') . ' ' . ($transaction->cashier->last_name ?? ''));
-                                    $tanggalTransaksi = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->format('d M Y H:i');
+                                    $tanggalTransaksi = \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d F Y H:i');
+                                    $nomor = $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage();
                                 @endphp
 
                                 <tr class="transaction-row hover:bg-slate-50 transition"
                                     data-search="{{ strtolower($kodeTransaksi . ' ' . $tanggalTransaksi . ' ' . $namaCabang . ' ' . $kotaCabang . ' ' . $namaKasir . ' ' . $transaction->total_bayar) }}">
+                                    <td class="px-6 py-5 text-sm text-slate-500">
+                                        {{ $nomor }}
+                                    </td>
                                     <td class="px-6 py-5 font-black text-slate-900">
                                         {{ $kodeTransaksi }}
                                     </td>
@@ -249,14 +261,14 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-16 text-center text-slate-500">
+                                    <td colspan="7" class="px-6 py-16 text-center text-slate-500">
                                         Tidak ada transaksi ditemukan.
                                     </td>
                                 </tr>
                             @endforelse
 
                             <tr id="emptySearchRow" class="hidden">
-                                <td colspan="6" class="px-6 py-16 text-center text-slate-500">
+                                <td colspan="7" class="px-6 py-16 text-center text-slate-500">
                                     Data transaksi tidak ditemukan.
                                 </td>
                             </tr>
@@ -272,6 +284,9 @@
         </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -329,6 +344,17 @@
                     }
                 });
             }
+
+            flatpickr('#start_date, #end_date', {
+                altInput: true,
+                altFormat: 'd/m/Y',
+                dateFormat: 'Y-m-d',
+                locale: 'id',
+                allowInput: true,
+                onChange: function() {
+                    document.getElementById('chartFilterForm').submit();
+                }
+            });
 
             const searchInput = document.getElementById('searchInput');
             const resetSearch = document.getElementById('resetSearch');

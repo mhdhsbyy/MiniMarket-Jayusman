@@ -97,6 +97,7 @@
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 border-b border-slate-200">
                                     <tr>
+                                        <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase w-12">No</th>
                                         <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kode</th>
                                         <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Produk</th>
                                         <th class="px-6 py-4 text-xs font-black text-slate-500 uppercase">Kategori</th>
@@ -120,6 +121,9 @@
                                             data-category="{{ strtolower($product->category->nama ?? '') }}"
                                             data-search="{{ strtolower($product->kode . ' ' . $product->nama . ' ' . ($product->category->nama ?? '') . ' ' . ($product->supplier->nama ?? '')) }}">
 
+                                            <td class="px-6 py-5 text-sm font-black text-slate-400 text-center">
+                                                {{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
+                                            </td>
                                             <td class="px-6 py-5 font-black text-slate-900">
                                                 {{ $product->kode }}
                                             </td>
@@ -130,6 +134,9 @@
                                                 </p>
                                                 <p class="text-sm text-slate-500">
                                                     {{ $product->supplier->nama ?? '-' }}
+                                                    @if ($product->supplier && $product->supplier->status === 'inactive')
+                                                        <span class="ml-2 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black">Tidak restock</span>
+                                                    @endif
                                                 </p>
                                             </td>
 
@@ -171,14 +178,14 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                            <td colspan="7" class="px-6 py-16 text-center text-slate-500 font-bold">
                                                 Tidak ada produk tersedia.
                                             </td>
                                         </tr>
                                     @endforelse
 
                                     <tr id="emptyProductSearch" class="hidden">
-                                        <td colspan="6" class="px-6 py-16 text-center text-slate-500 font-bold">
+                                        <td colspan="7" class="px-6 py-16 text-center text-slate-500 font-bold">
                                             Produk tidak ditemukan pada halaman ini.
                                         </td>
                                     </tr>
